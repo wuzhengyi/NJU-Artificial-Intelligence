@@ -18,7 +18,7 @@ import tools.ElapsedCpuTimer;
  */
 public class Agent extends AbstractPlayer {
 
-    protected ArrayList<StateObservation> hasStateObs = null;
+    protected ArrayList<StateObservation> hasStateObs = new ArrayList<>();
 
     /**
     * Whether the results have been calculated.
@@ -28,7 +28,7 @@ public class Agent extends AbstractPlayer {
     /**
     * The answer of DepthFisrt actions.
     */
-    protected ArrayList<Types.ACTIONS> depthFirstAction = null;
+    protected ArrayList<Types.ACTIONS> depthFirstAction = new ArrayList<>();
 
     /**
     *  The number of now Step
@@ -48,7 +48,7 @@ public class Agent extends AbstractPlayer {
     protected boolean isInOldStateObs(StateObservation obs){
         for(StateObservation tmp:hasStateObs){
             if(tmp.equalPosition(obs)){
-                System.out.println("Old Action");
+//                System.out.println("Old Action");
                 return true;
             }
         }
@@ -67,40 +67,47 @@ public class Agent extends AbstractPlayer {
         nowStep = -1;
         grid = so.getObservationGrid();
         block_size = so.getBlockSize();
-        hasStateObs = new ArrayList<>();
+        hasStateObs.clear();
+        depthFirstAction.clear();
     }
 
     /**
     * Recursive computing depth first path.
     */
     boolean getDepthFirst(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
+//        debugPrintAllAction(depthFirstAction);
+        if(isInOldStateObs(stateObs)){
+            return false;
+        }
+        else{
+            hasStateObs.add(stateObs);
+        }
         Types.ACTIONS action = null; // 动作
         StateObservation stCopy = stateObs.copy(); //局面
         ArrayList<Types.ACTIONS> actions = stateObs.getAvailableActions();
         for(Types.ACTIONS tmp:actions){
             action = tmp;
             stCopy.advance(action);
-            if(/*stCopy.isGameOver()*/stateObs.getGameWinner()==Types.WINNER.PLAYER_WINS) {
+            depthFirstAction.add(action);
+            if(stCopy.getGameWinner()==Types.WINNER.PLAYER_WINS) {
                 System.out.println("Found it!");
+                debugPrintAllAction(depthFirstAction);
+                nowStep = 0;
                 isCalculated = true;
-                depthFirstAction.add(action);
-                nowStep = depthFirstAction.size()-1;
                 return true;
             }
-            else if(isInOldStateObs(stCopy)){
+            else if(isInOldStateObs(stCopy) || stCopy.isGameOver()){
                 stCopy = stateObs.copy();
+                depthFirstAction.remove(depthFirstAction.size()-1);
                 continue;
             }
             else{
-                hasStateObs.add(stCopy);
                 if(getDepthFirst(stCopy,elapsedTimer)){
-                    isCalculated = true;
-                    depthFirstAction.add(action);
-                    nowStep = depthFirstAction.size()-1;
                     return true;
                 }
                 else {
                     stCopy = stateObs.copy();
+                    depthFirstAction.remove(depthFirstAction.size()-1);
                     continue;
                 }
             }
@@ -119,17 +126,45 @@ public class Agent extends AbstractPlayer {
         // return action directly if answer has been calculated.
         grid = stateObs.getObservationGrid();
         if(isCalculated && nowStep > -1)
-                return depthFirstAction.get(nowStep--);
+                return depthFirstAction.get(nowStep++);
         if(getDepthFirst(stateObs,elapsedTimer))
-            return depthFirstAction.get(nowStep--);
+            return depthFirstAction.get(nowStep++);
         else {
             if(isCalculated)
                 System.out.print("ERROR: NO ACTIONS, STATE IS Calculated\n");
-            else
-                System.out.print("ERROR: NO ACTIONS, STATE IS NOT Calculated\n");
+            else{
+                if(depthFirstAction.size()==0)
+                    System.out.print("ERROR: NO ACTIONS, STATE IS NOT Calculated\n");
+            }
             return Types.ACTIONS.ACTION_NIL;
         }
     }
 
+    public void debugPrint(Types.ACTIONS act){
+        switch (act){
 
+            case ACTION_NIL:System.out.print("NIL->");
+                break;
+            case ACTION_UP:System.out.print("UP->");
+                break;
+            case ACTION_LEFT:System.out.print("LEFT->");
+                break;
+            case ACTION_DOWN:System.out.print("DOWN->");
+                break;
+            case ACTION_RIGHT:System.out.print("RIGHT->");
+                break;
+            case ACTION_USE:System.out.print("USE->");
+                break;
+            case ACTION_ESCAPE:System.out.print("ESCAPE->");
+                break;
+        }
+    }
+
+    protected void debugPrintAllAction(ArrayList<Types.ACTIONS> actions){
+        System.out.println("now action num: " + depthFirstAction.size());
+        for(Types.ACTIONS tmp:actions)
+            debugPrint(tmp);
+        System.out.println("END");
+
+    }
 }

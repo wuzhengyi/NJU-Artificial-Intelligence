@@ -65,7 +65,7 @@ public class Agent extends AbstractPlayer {
     {
         isCalculated = false;
         nowStep = -1;
-        grid = so.getObservationGrid();
+        // grid = so.getObservationGrid();
         block_size = so.getBlockSize();
         hasStateObs.clear();
         depthFirstAction.clear();
@@ -124,7 +124,7 @@ public class Agent extends AbstractPlayer {
      */
     public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
         // return action directly if answer has been calculated.
-        grid = stateObs.getObservationGrid();
+        // grid = stateObs.getObservationGrid();
         if(isCalculated && nowStep > -1)
                 return depthFirstAction.get(nowStep++);
         if(getDepthFirst(stateObs,elapsedTimer))

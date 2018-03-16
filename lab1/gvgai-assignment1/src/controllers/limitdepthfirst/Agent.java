@@ -9,6 +9,7 @@ import core.game.StateObservation;
 import core.player.AbstractPlayer;
 import ontology.Types;
 import tools.ElapsedCpuTimer;
+import tools.Vector2d;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,7 +53,6 @@ public class Agent extends AbstractPlayer {
     protected boolean isInOldStateObs(StateObservation obs){
         for(StateObservation tmp:hasStateObs){
             if(tmp.equalPosition(obs)){
-//                System.out.println("Old Action");
                 return true;
             }
         }
@@ -62,26 +62,38 @@ public class Agent extends AbstractPlayer {
     /** 
      * get the distance between 2 things
     */    
-    protected int getDistance(Vector2d x, Vector2d y) {
-        
+    protected double getDistance(Vector2d vec1, Vector2d vec2) {
+        return Math.abs(vec1.x - vec2.x) + Math.abs(vec1.y - vec2.y);
+    }
+
+    public boolean avatarGetKey(StateObservation stateObs){
+        return stateObs.getAvatarType() != 1;
     }
 
     /**
      *  get now State Observation score 
      */
-    protected int getStateObsScore(StateObservation so) {
+    protected double getStateObsScore(StateObservation stateObs) {
         ArrayList[] fixedPositions = stateObs.getImmovablePositions();
         ArrayList[] movingPositions = stateObs.getMovablePositions();
-        Vector2d goalpos = fixedPositions[1].get(0).position; //目标位置
-        Vector2d keypos = movingPositions[0].get(0).position; //钥匙的位置
-        /** TODO: get avatar position , 
-         * if(get key)
-         *      return distance between door and avatar
-         * else
-         *      return distance between key and avatar
-         */
+        Vector2d avatarpos = stateObs.getAvatarPosition();
+        Vector2d goalpos = ((Observation)(fixedPositions[1].get(0))).position; //目标位置
+        Vector2d keypos = ((Observation)(movingPositions[0].get(0))).position; //钥匙的位置
+//        System.out.println(stateObs.getAvatarType()); // 没拿到钥匙是1
+//        debugPos(avatarpos,"精灵");
+//        debugPos(goalpos,"门");
+//        debugPos(keypos,"钥匙");
+        if(avatarGetKey(stateObs)){
+            return getDistance(goalpos,avatarpos);
+        }
+        else{
+            return getDistance(keypos,avatarpos);
+        }
     }
-    
+
+    public void debugPos(Vector2d vec, String head){
+        System.out.println(head + vec.toString());
+    }
     /**
      * Public constructor with state observation and time due.
      * @param so state observation of the current game.
@@ -100,7 +112,7 @@ public class Agent extends AbstractPlayer {
     /**
     * Recursive computing depth first path.
     */
-    boolean getDepthFirst(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
+    boolean getLimitDepthFirst(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
 //        debugPrintAllAction(depthFirstAction);
         if(isInOldStateObs(stateObs)){
             return false;
@@ -149,21 +161,8 @@ public class Agent extends AbstractPlayer {
      * @return An action for the current state
      */
     public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
-        // return action directly if answer has been calculated.
-        // grid = stateObs.getObservationGrid();
-        if(isCalculated && nowStep > -1)
-                return depthFirstAction.get(nowStep++);
-        if(getDepthFirst(stateObs,elapsedTimer))
-            return depthFirstAction.get(nowStep++);
-        else {
-            if(isCalculated)
-                System.out.print("ERROR: NO ACTIONS, STATE IS Calculated\n");
-            else{
-                if(depthFirstAction.size()==0)
-                    System.out.print("ERROR: NO ACTIONS, STATE IS NOT Calculated\n");
-            }
-            return Types.ACTIONS.ACTION_NIL;
-        }
+        getStateObsScore(stateObs);
+        return Types.ACTIONS.ACTION_DOWN;
     }
 
     public void debugPrint(Types.ACTIONS act){

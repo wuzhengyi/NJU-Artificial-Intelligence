@@ -27,10 +27,10 @@ public class Assignment1 {
         int seed = new Random().nextInt(); // seed for random
         
         
-        /****** Task 1 ******/
-        CompetitionParameters.ACTION_TIME = 10000; // set to the time that allow you to do the depth first search
-        ArcadeMachine.runOneGame("examples/gridphysics/bait.txt", "examples/gridphysics/bait_lvl0.txt", true, depthfirstController, null, seed, false);
-        
+//        /****** Task 1 ******/
+//        CompetitionParameters.ACTION_TIME = 10000; // set to the time that allow you to do the depth first search
+//        ArcadeMachine.runOneGame("examples/gridphysics/bait.txt", "examples/gridphysics/bait_lvl0.txt", true, depthfirstController, null, seed, false);
+//
 
         /****** Task 2 ******/
         CompetitionParameters.ACTION_TIME = 100; // no time for finding the whole path

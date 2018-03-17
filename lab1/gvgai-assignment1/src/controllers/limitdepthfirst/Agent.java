@@ -2,6 +2,7 @@ package controllers.limitdepthfirst;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Vector;
 
 import core.game.Observation;
@@ -23,7 +24,7 @@ public class Agent extends AbstractPlayer {
 
     protected ArrayList<StateObservation> hasStateObs = new ArrayList<>();
     protected ArrayList<Integer> stateDepth = new ArrayList<>();
-    protected final int MAX_DEPTH  = 2;
+    protected final int MAX_DEPTH  = 6;
     /**
     * The answer of DepthFisrt actions.
     */
@@ -94,7 +95,7 @@ public class Agent extends AbstractPlayer {
         }
         else{
 //            System.out.println("Key - Avatar : " + getDistance(keypos,avatarpos));
-            return getDistance(keypos,avatarpos);
+            return getDistance(keypos,avatarpos) + getDistance(goalpos,keypos);
         }
     }
 
@@ -174,11 +175,13 @@ public class Agent extends AbstractPlayer {
         Types.ACTIONS action = null; // 动作
         StateObservation stCopy = stateObs.copy(); //局面
         ArrayList<Types.ACTIONS> actions = stateObs.getAvailableActions();
-
+        Collections.shuffle(actions);
         for(Types.ACTIONS tmp:actions){
             action = tmp;
             stCopy.advance(action);
-            debugPrint(action);
+            if(stCopy.equalPosition(stateObs))
+                continue;
+//            debugPrint(action);
 //            System.out.println("try it");
             limitDepthFirstAction.add(action);
             if(stCopy.getGameWinner()==Types.WINNER.PLAYER_WINS) {
@@ -201,7 +204,7 @@ public class Agent extends AbstractPlayer {
                 continue;
             }*/
             else{
-                System.out.println("next in depth " + depth);
+//                System.out.println("next in depth " + depth);
                 limitDepthFirst(stCopy,elapsedTimer,depth);
                 stCopy = stateObs.copy();
                 limitDepthFirstAction.remove(limitDepthFirstAction.size()-1);

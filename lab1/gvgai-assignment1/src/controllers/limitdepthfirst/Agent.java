@@ -18,25 +18,24 @@ import tools.Vector2d;
  * Time: 19:50
  * This is a Java port from Tom Schaul's VGDL - https://github.com/schaul/py-vgdl
  */
+
 public class Agent extends AbstractPlayer {
 
     protected ArrayList<StateObservation> hasStateObs = new ArrayList<>();
-
-    /**
-    * Whether the results have been calculated.
-    */
-    protected boolean isCalculated;
-
+    protected ArrayList<Integer> stateDepth = new ArrayList<>();
+    protected final int MAX_DEPTH  = 2;
     /**
     * The answer of DepthFisrt actions.
     */
-    protected ArrayList<Types.ACTIONS> depthFirstAction = new ArrayList<>();
+    protected ArrayList<Types.ACTIONS> limitDepthFirstAction = new ArrayList<>();
 
     /**
     *  The number of now Step
     */
-    protected int nowStep;
-
+    protected double dist = Double.POSITIVE_INFINITY;
+    protected ArrayList<Types.ACTIONS> bestAction = new ArrayList<>();
+    Vector2d goalpos = null; //目标位置
+    Vector2d keypos = null; //钥匙的位置
     /**
      * Observation grid.
      */
@@ -50,13 +49,15 @@ public class Agent extends AbstractPlayer {
     /** 
      * Judge whether the State obs has occurred
      */
-    protected boolean isInOldStateObs(StateObservation obs){
+    protected int isInOldStateObs(StateObservation obs){
+        int i=0;
         for(StateObservation tmp:hasStateObs){
             if(tmp.equalPosition(obs)){
-                return true;
+                return i;
             }
+            i++;
         }
-        return false;
+        return -1;
     }
 
     /** 
@@ -74,19 +75,25 @@ public class Agent extends AbstractPlayer {
      *  get now State Observation score 
      */
     protected double getStateObsScore(StateObservation stateObs) {
-        ArrayList[] fixedPositions = stateObs.getImmovablePositions();
-        ArrayList[] movingPositions = stateObs.getMovablePositions();
+
         Vector2d avatarpos = stateObs.getAvatarPosition();
-        Vector2d goalpos = ((Observation)(fixedPositions[1].get(0))).position; //目标位置
-        Vector2d keypos = ((Observation)(movingPositions[0].get(0))).position; //钥匙的位置
+        if(goalpos == null || keypos == null){
+            ArrayList[] fixedPositions = stateObs.getImmovablePositions();
+            ArrayList[] movingPositions = stateObs.getMovablePositions();
+            goalpos = ((Observation)(fixedPositions[1].get(0))).position; //目标位置
+            keypos = ((Observation)(movingPositions[0].get(0))).position; //钥匙的位置
+        }
+
 //        System.out.println(stateObs.getAvatarType()); // 没拿到钥匙是1
 //        debugPos(avatarpos,"精灵");
 //        debugPos(goalpos,"门");
 //        debugPos(keypos,"钥匙");
         if(avatarGetKey(stateObs)){
+//            System.out.println("Goal - Avatar : " + getDistance(goalpos,avatarpos));
             return getDistance(goalpos,avatarpos);
         }
         else{
+//            System.out.println("Key - Avatar : " + getDistance(keypos,avatarpos));
             return getDistance(keypos,avatarpos);
         }
     }
@@ -94,63 +101,114 @@ public class Agent extends AbstractPlayer {
     public void debugPos(Vector2d vec, String head){
         System.out.println(head + vec.toString());
     }
-    /**
-     * Public constructor with state observation and time due.
-     * @param so state observation of the current game.
-     * @param elapsedTimer Timer for the controller creation.
-     */
+
+    protected void initAgent(){
+        dist = Double.POSITIVE_INFINITY;
+        // grid = so.getObservationGrid();
+        hasStateObs.clear();
+        stateDepth.clear();
+        bestAction.clear();
+        limitDepthFirstAction.clear();
+    }
     public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer)
     {
-        isCalculated = false;
-        nowStep = -1;
-        // grid = so.getObservationGrid();
+        initAgent();
         block_size = so.getBlockSize();
-        hasStateObs.clear();
-        depthFirstAction.clear();
     }
 
     /**
     * Recursive computing depth first path.
     */
     boolean getLimitDepthFirst(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
-//        debugPrintAllAction(depthFirstAction);
-        if(isInOldStateObs(stateObs)){
-            return false;
+        double avgTimeTaken = 0;
+        double acumTimeTaken = 0;
+        long remaining = elapsedTimer.remainingTimeMillis();
+        int numIters = 0;
+
+        int remainingLimit = 5;
+        while(remaining > 2*avgTimeTaken && remaining > remainingLimit){
+            ElapsedCpuTimer elapsedTimerIteration = new ElapsedCpuTimer();
+
+//            if(limitDepthFirst(stateObs,elapsedTimer,numIters))
+//                return true;
+
+            numIters++;
+            acumTimeTaken += (elapsedTimerIteration.elapsedMillis()) ;
+            //System.out.println(elapsedTimerIteration.elapsedMillis() + " --> " + acumTimeTaken + " (" + remaining + ")");
+            avgTimeTaken  = acumTimeTaken/numIters;
+            remaining = elapsedTimer.remainingTimeMillis();
+        }
+        return false;
+    }
+
+    protected void limitDepthFirst(StateObservation stateObs, ElapsedCpuTimer elapsedTimer, int depth){
+//        System.out.println("depth: "+ depth);
+//        System.out.println("score: " + dist);
+        if(depth-- <= 0){
+            double temp = getStateObsScore(stateObs);
+
+            if(temp < dist){
+                dist = temp - (depth+1);
+                bestAction.clear();
+                bestAction.addAll(limitDepthFirstAction);
+                System.out.println("best score: "+ dist);
+                debugPrintAllAction(bestAction);
+            }
+            return;
+        }
+        else if(depth != MAX_DEPTH){
+            if(isInOldStateObs(stateObs)!=-1 && depth == stateDepth.get(isInOldStateObs(stateObs))){
+                return;
+            }
+            else{
+                hasStateObs.add(stateObs);
+                stateDepth.add(depth);
+            }
         }
         else{
-            hasStateObs.add(stateObs);
+            hasStateObs.clear();
+            stateDepth.clear();
         }
+
+
         Types.ACTIONS action = null; // 动作
         StateObservation stCopy = stateObs.copy(); //局面
         ArrayList<Types.ACTIONS> actions = stateObs.getAvailableActions();
+
         for(Types.ACTIONS tmp:actions){
             action = tmp;
             stCopy.advance(action);
-            depthFirstAction.add(action);
+            debugPrint(action);
+//            System.out.println("try it");
+            limitDepthFirstAction.add(action);
             if(stCopy.getGameWinner()==Types.WINNER.PLAYER_WINS) {
-                System.out.println("Found it!");
-                debugPrintAllAction(depthFirstAction);
-                nowStep = 0;
-                isCalculated = true;
-                return true;
-            }
-            else if(isInOldStateObs(stCopy) || stCopy.isGameOver()){
+                System.out.println("Found it! Score: " + (-depth-1) + " now is "+dist);
+
+                if(- (depth+1) < dist){
+                    dist =  - (depth+1);
+                    bestAction.clear();
+                    bestAction.addAll(limitDepthFirstAction);
+                    debugPrintAllAction(limitDepthFirstAction);
+                }
                 stCopy = stateObs.copy();
-                depthFirstAction.remove(depthFirstAction.size()-1);
+                limitDepthFirstAction.remove(limitDepthFirstAction.size()-1);
                 continue;
             }
+/*            else if(isInOldStateObs(stCopy) || stCopy.isGameOver()){
+                System.out.println("can't do it");
+                stCopy = stateObs.copy();
+                limitDepthFirstAction.remove(limitDepthFirstAction.size()-1);
+                continue;
+            }*/
             else{
-                if(getDepthFirst(stCopy,elapsedTimer)){
-                    return true;
-                }
-                else {
-                    stCopy = stateObs.copy();
-                    depthFirstAction.remove(depthFirstAction.size()-1);
-                    continue;
-                }
+                System.out.println("next in depth " + depth);
+                limitDepthFirst(stCopy,elapsedTimer,depth);
+                stCopy = stateObs.copy();
+                limitDepthFirstAction.remove(limitDepthFirstAction.size()-1);
+                continue;
+
             }
         }
-        return false;
     }
 
     /**
@@ -161,8 +219,28 @@ public class Agent extends AbstractPlayer {
      * @return An action for the current state
      */
     public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
-        getStateObsScore(stateObs);
-        return Types.ACTIONS.ACTION_DOWN;
+//        if(isCalculated && nowStep > -1)
+//            return limitDepthFirstAction.get(nowStep++);
+        initAgent();
+        limitDepthFirst(stateObs,elapsedTimer,MAX_DEPTH);
+//        debugPrintAllAction(bestAction);
+        System.out.print("Size: " + bestAction.size() + "   ACTION: ");
+        debugPrint(bestAction.get(0));
+        System.out.println("END\n____________________________");
+        return bestAction.get(0);
+//        if(limitDepthFirst(stateObs,elapsedTimer,3))
+//            return bestAction.get(0);
+//        else {
+//            System.out.println("no");
+////            if(isCalculated)
+////                System.out.print("ERROR: NO ACTIONS, STATE IS Calculated\n");
+////            else{
+////                if(limitDepthFirstAction.size()==0)
+////                    System.out.print("ERROR: NO ACTIONS, STATE IS NOT Calculated\n");
+////            }
+//            return Types.ACTIONS.ACTION_NIL;
+//        }
+
     }
 
     public void debugPrint(Types.ACTIONS act){
@@ -186,7 +264,7 @@ public class Agent extends AbstractPlayer {
     }
 
     protected void debugPrintAllAction(ArrayList<Types.ACTIONS> actions){
-        System.out.println("now action num: " + depthFirstAction.size());
+        System.out.println("now action num: " + actions.size());
         for(Types.ACTIONS tmp:actions)
             debugPrint(tmp);
         System.out.println("END");

@@ -33,7 +33,7 @@ public class Assignment1 {
 //
 
         /****** Task 2 ******/
-        CompetitionParameters.ACTION_TIME = 100; // no time for finding the whole path
+        CompetitionParameters.ACTION_TIME = 1000; // no time for finding the whole path
         ArcadeMachine.runOneGame("examples/gridphysics/bait.txt", "examples/gridphysics/bait_lvl0.txt", true, limitdepthfirstController, null, seed, false);
 
 

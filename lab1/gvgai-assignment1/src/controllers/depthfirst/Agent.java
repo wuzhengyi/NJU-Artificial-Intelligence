@@ -141,23 +141,7 @@ public class Agent extends AbstractPlayer {
     }
 
     public void debugPrint(Types.ACTIONS act){
-        switch (act){
-
-            case ACTION_NIL:System.out.print("NIL->");
-                break;
-            case ACTION_UP:System.out.print("UP->");
-                break;
-            case ACTION_LEFT:System.out.print("LEFT->");
-                break;
-            case ACTION_DOWN:System.out.print("DOWN->");
-                break;
-            case ACTION_RIGHT:System.out.print("RIGHT->");
-                break;
-            case ACTION_USE:System.out.print("USE->");
-                break;
-            case ACTION_ESCAPE:System.out.print("ESCAPE->");
-                break;
-        }
+        controllers.Astar.Agent.debugActionPrint(act);
     }
 
     protected void debugPrintAllAction(ArrayList<Types.ACTIONS> actions){

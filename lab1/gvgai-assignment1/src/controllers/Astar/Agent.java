@@ -8,7 +8,6 @@ import tools.ElapsedCpuTimer;
 import tools.Vector2d;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.PriorityQueue;
 
 
@@ -29,17 +28,19 @@ public class Agent extends AbstractPlayer {
     Vector2d keypos = null; //钥匙的位置
     protected ArrayList<Observation> grid[][];
     protected int block_size;
-
+    protected boolean getAnswer;
     protected void initAgent(){
         openList.clear();
         closeList.clear();
         aStarAction.clear();
+        getAnswer = false;
     }
 
     public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer)
     {
         initAgent();
         block_size = so.getBlockSize();
+        aStar(so,elapsedTimer);
     }
 
     /**
@@ -80,6 +81,7 @@ public class Agent extends AbstractPlayer {
      */
     public double heuristic(StateObservation stateObs){
         int radio = -500;
+        int cost = 1;
         Vector2d avatarpos = stateObs.getAvatarPosition();
         ArrayList[] fixedPositions = stateObs.getImmovablePositions();
         ArrayList[] movingPositions = stateObs.getMovablePositions();
@@ -90,35 +92,27 @@ public class Agent extends AbstractPlayer {
 
         if(movingPositions == null){
             //System.out.println("null");
-            return radio*stateObs.getGameScore()+getDistance(goalpos,avatarpos);
+            return radio*stateObs.getGameScore()+cost*getDistance(goalpos,avatarpos);
         }
         if(avatarGetKey(stateObs)){
-            return radio*stateObs.getGameScore()+getDistance(goalpos,avatarpos);
+            return radio*stateObs.getGameScore()+cost*getDistance(goalpos,avatarpos);
         }
         else{
-            return radio*stateObs.getGameScore()+getDistance(keypos,avatarpos) + getDistance(goalpos,keypos);
+            return radio*stateObs.getGameScore()+cost*getDistance(keypos,avatarpos) + cost*getDistance(goalpos,keypos);
         }
     }
-    /**
-     * Picks an action. This function is called every game step to request an
-     * action from the player.
-     * @param stateObs Observation of the current state.
-     * @param elapsedTimer Timer when the action returned is due.
-     * @return An action for the current state
-     */
-    public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
-        int myStep = 0;
+
+
+    protected void aStar(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
         initAgent();
         Node startNode = new Node(stateObs,heuristic(stateObs),aStarAction);
         openList.add(startNode);
 
         long remaining = elapsedTimer.remainingTimeMillis();
-        int remainingLimit = 10;
+        int remainingLimit = 15;
         while(remaining > remainingLimit && !openList.isEmpty() /*&& myStep<30*/)
         {
-//            myStep++;
 //            System.out.println("_______________________________");
-//            System.out.println(myStep++);
 //            System.out.println("number of openlist:" + openList.size());
 //            debugOpenList();
             ElapsedCpuTimer elapsedTimerIteration = new ElapsedCpuTimer();
@@ -126,7 +120,7 @@ public class Agent extends AbstractPlayer {
             Node tmp = openList.poll();
             aStarAction.clear();
             aStarAction.addAll(tmp.actions);
-            debugPrintAllAction(aStarAction);
+//            debugPrintAllAction(aStarAction);
             ArrayList<Types.ACTIONS> actions = tmp.stateObs.getAvailableActions();
             closeList.add(tmp.stateObs.copy());
             for(Types.ACTIONS act:actions){
@@ -135,8 +129,8 @@ public class Agent extends AbstractPlayer {
 //                closeList.add(stCopy.copy());
                 aStarAction.add(act);
                 if(stCopy.getGameWinner()==Types.WINNER.PLAYER_WINS) {
-                    return aStarAction.get(0);
-//                    openList.add(new Node(stCopy,heuristic(stCopy),aStarAction));
+                    getAnswer = true;
+                    return ;
                 }
                 else if(stCopy.isGameOver() || isInCloseList(stCopy) != -1) {
                     aStarAction.remove(aStarAction.size()-1);
@@ -166,11 +160,32 @@ public class Agent extends AbstractPlayer {
 
             remaining = elapsedTimer.remainingTimeMillis();
         }
+    }
+
+    /**
+     * Picks an action. This function is called every game step to request an
+     * action from the player.
+     * @param stateObs Observation of the current state.
+     * @param elapsedTimer Timer when the action returned is due.
+     * @return An action for the current state
+     */
+    public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
+        if(getAnswer){
+            Types.ACTIONS act = aStarAction.get(0);
+            aStarAction.remove(0);
+            return act;
+        }
+
+        aStar(stateObs,elapsedTimer);
 //        System.out.println("number of openlist:" + openList.size());
         if(openList.isEmpty() || openList.peek().actions.isEmpty()) {
 //            System.out.println("[Error] no action");
             return Types.ACTIONS.ACTION_NIL;
         }
+//        System.out.println("_______________________________");
+//        System.out.println("number of openlist:" + openList.size());
+//        debugOpenList();
+//        debugActionPrint(openList.peek().actions.get(0));
         return openList.peek().actions.get(0);
     }
 
@@ -195,7 +210,10 @@ public class Agent extends AbstractPlayer {
     }
 
     private void debugOpenList(){
+//        int i= 1;
         for(Node t:openList){
+//            if(i++ > 5)
+//                break;
             Vector2d pos = t.stateObs.getAvatarPosition();
             System.out.println(pos.toString() + " f: " + t.getfValue() + " h: " + t.gethValue());
         }

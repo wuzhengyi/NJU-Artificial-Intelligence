@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class Node implements Comparable<Node>{
     private double hValue;
     private int fValue;
+    private double sum;
     public StateObservation stateObs;
     public ArrayList<Types.ACTIONS> actions = new ArrayList<>();;
 
@@ -14,7 +15,8 @@ public class Node implements Comparable<Node>{
         this.stateObs = stateObs.copy();
         this.actions.clear();
         this.actions.addAll(actions);
-        fValue = actions.size() * 50;
+        fValue = actions.size() * 20;
+        sum = fValue + hValue;
     }
     public double getfValue(){return fValue;}
     public double gethValue(){return hValue;}
@@ -26,9 +28,9 @@ public class Node implements Comparable<Node>{
     }
 
     public int compareTo(Node n){
-        if(this.hValue + this.fValue > n.hValue+n.fValue)
+        if(this.sum > n.sum)
             return 1;
-        else if(this.hValue + this.fValue < n.hValue + n.fValue)
+        else if(this.sum  < n.sum)
             return -1;
         return 0;
     }

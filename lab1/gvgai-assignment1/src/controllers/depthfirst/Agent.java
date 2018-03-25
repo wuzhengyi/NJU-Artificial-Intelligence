@@ -1,6 +1,5 @@
 package controllers.depthfirst;
 
-import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import core.game.Observation;
@@ -18,7 +17,7 @@ import tools.ElapsedCpuTimer;
  */
 public class Agent extends AbstractPlayer {
 
-    protected ArrayList<StateObservation> hasStateObs = new ArrayList<>();
+    protected ArrayList<StateObservation> closeList = new ArrayList<>();
 
     /**
     * Whether the results have been calculated.
@@ -45,8 +44,8 @@ public class Agent extends AbstractPlayer {
      */
     protected int block_size;
 
-    protected boolean isInOldStateObs(StateObservation obs){
-        for(StateObservation tmp:hasStateObs){
+    protected boolean isInCloseList(StateObservation obs){
+        for(StateObservation tmp: closeList){
             if(tmp.equalPosition(obs)){
 //                System.out.println("Old Action");
                 return true;
@@ -67,7 +66,7 @@ public class Agent extends AbstractPlayer {
         nowStep = -1;
         // grid = so.getObservationGrid();
         block_size = so.getBlockSize();
-        hasStateObs.clear();
+        closeList.clear();
         depthFirstAction.clear();
     }
 
@@ -76,11 +75,11 @@ public class Agent extends AbstractPlayer {
     */
     boolean getDepthFirst(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
 //        debugPrintAllAction(depthFirstAction);
-        if(isInOldStateObs(stateObs)){
+        if(isInCloseList(stateObs)){
             return false;
         }
         else{
-            hasStateObs.add(stateObs);
+            closeList.add(stateObs);
         }
         Types.ACTIONS action = null; // 动作
         StateObservation stCopy = stateObs.copy(); //局面
@@ -96,7 +95,7 @@ public class Agent extends AbstractPlayer {
                 isCalculated = true;
                 return true;
             }
-            else if(isInOldStateObs(stCopy) || stCopy.isGameOver()){
+            else if(isInCloseList(stCopy) || stCopy.isGameOver()){
                 stCopy = stateObs.copy();
                 depthFirstAction.remove(depthFirstAction.size()-1);
                 continue;

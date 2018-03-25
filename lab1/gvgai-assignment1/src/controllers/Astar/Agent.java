@@ -20,7 +20,6 @@ import java.util.PriorityQueue;
  */
 
 public class Agent extends AbstractPlayer {
-
     protected ArrayList<StateObservation> closeList = new ArrayList<>();
     protected ArrayList<Types.ACTIONS> aStarAction = new ArrayList<>();
     protected PriorityQueue<Node> openList = new PriorityQueue<>();
@@ -29,6 +28,7 @@ public class Agent extends AbstractPlayer {
     protected ArrayList<Observation> grid[][];
     protected int block_size;
     protected boolean getAnswer;
+
     protected void initAgent(){
         openList.clear();
         closeList.clear();

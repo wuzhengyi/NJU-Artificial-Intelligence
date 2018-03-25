@@ -107,7 +107,7 @@ public class Agent extends AbstractPlayer{
 	/**
 	 * get a random number for the input distribution
 	 * @param dist	an array of probabilities
-	 * @return		return a number that is sampled from this dist
+	 * @return		return a number that is sampled from this bestCost
 	 */
 	private int getNextEmpericalDist(ArrayList<Double> dist){
 		ArrayList<Double> cdf = getCDF(dist);

@@ -1,0 +1,474 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.4.1/github-markdown.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.css">
+<link rel="stylesheet" href="https://gitcdn.xyz/repo/goessner/mdmath/master/css/texmath.css">
+<link rel="stylesheet" href="https://gitcdn.xyz/repo/goessner/mdmath/master/css/vscode-texmath.css">
+
+</head><body class="markdown-body">
+<h1 data-line="0" class="code-line" id="%E4%BD%9C%E4%B8%9A1-bait%E6%B8%B8%E6%88%8F-%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A">作业1: Bait游戏 实验报告</h1>
+<h2 data-line="2" class="code-line" id="151220129-%E8%AE%A1%E7%A7%91-%E5%90%B4%E6%94%BF%E4%BA%BF">151220129 计科 吴政亿</h2>
+<h3 data-line="4" class="code-line" id="%E4%BB%BB%E5%8A%A1%E4%B8%80-%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2">任务一 深度优先搜索</h3>
+<h4 data-line="6" class="code-line" id="%E5%8F%98%E9%87%8F%E7%AE%80%E4%BB%8B">变量简介</h4>
+<table>
+<thead>
+<tr>
+<th>变量类型</th>
+<th>变量名</th>
+<th>变量含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArrayList<StateObservation></td>
+<td>closeList</td>
+<td>存储已经走过的历史路径</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>isCalculated</td>
+<td>是否得到了能走到终点的答案</td>
+</tr>
+<tr>
+<td>ArrayList&lt;Types.ACTIONS&gt;</td>
+<td>depthFirstAction</td>
+<td>存储dfs中的每一步动作</td>
+</tr>
+<tr>
+<td>int</td>
+<td>nowStep</td>
+<td>当前步骤在depthFirstAction的下标</td>
+</tr>
+</tbody>
+</table>
+<h4 data-line="15" class="code-line" id="%E5%87%BD%E6%95%B0%E7%AE%80%E4%BB%8B">函数简介</h4>
+<table>
+<thead>
+<tr>
+<th>返回类型</th>
+<th>函数名</th>
+<th>传入参数</th>
+<th>函数功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>isInCloseList</td>
+<td>StateObservation obs</td>
+<td>检测是否在历史状态中</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>getDepthFirst</td>
+<td>StateObservation stateObs, ElapsedCpuTimer elapsedTimer</td>
+<td>计算从stateObs出发的深度优先路径，如果找到则返回true</td>
+</tr>
+<tr>
+<td>Types.ACTIONS</td>
+<td>act</td>
+<td>StateObservation stateObs, ElapsedCpuTimer elapsedTimer</td>
+<td>根据局面stateObs调用getDepthFirst并返回当轮动作</td>
+</tr>
+<tr>
+<td>void</td>
+<td>debugPrint</td>
+<td>Types.ACTIONS act</td>
+<td>输出act动作信息</td>
+</tr>
+<tr>
+<td>void</td>
+<td>debugPrintAllAction</td>
+<td>ArrayList&lt;Types.ACTIONS&gt; actions</td>
+<td>输入actions中所有动作信息</td>
+</tr>
+</tbody>
+</table>
+<h4 data-line="25" class="code-line" id="%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81">核心代码</h4>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">getDepthFirst</span><span class="hljs-params">(StateObservation stateObs, ElapsedCpuTimer elapsedTimer)</span></span>{
+    <span class="hljs-keyword">if</span>(stateObs in closeList)
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+    <span class="hljs-keyword">else</span>
+        closeList.add(stateObs);
+        stCopy = stateObs.copy();
+    <span class="hljs-keyword">for</span>(all actions in stateObs){
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">this</span> action in stCopy;
+        depthFirstAction.add(action);
+        <span class="hljs-keyword">if</span>(win) 
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>; <span class="hljs-comment">// all actions are in 'depthFirstAction'</span>
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(stateObs in closeList || Game over){
+            stCopy = stateObs.copy(); <span class="hljs-comment">// reset stCopy</span>
+            depthFirstAction.delete(action);
+            <span class="hljs-keyword">continue</span>;
+        }
+        <span class="hljs-keyword">else</span>{ <span class="hljs-comment">// a new state</span>
+            <span class="hljs-keyword">if</span>(getDepthFirst(stCopy,elapsedTimer))
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+            <span class="hljs-keyword">else</span> {
+                stCopy = stateObs.copy(); <span class="hljs-comment">// reset stCopy</span>
+                depthFirstAction.delete(action);
+                <span class="hljs-keyword">continue</span>;
+            }
+        }
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+}
+</div></code></pre>
+<h3 data-line="58" class="code-line" id="%E4%BB%BB%E5%8A%A1%E4%BA%8C-%E6%B7%B1%E5%BA%A6%E5%8F%97%E9%99%90%E7%9A%84%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2">任务二 深度受限的深度优先搜索</h3>
+<h4 data-line="60" class="code-line" id="%E5%8F%98%E9%87%8F%E7%AE%80%E4%BB%8B">变量简介</h4>
+<table>
+<thead>
+<tr>
+<th>变量类型</th>
+<th>变量名</th>
+<th>变量含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArrayList<StateObservation></td>
+<td>closeList</td>
+<td>存储已经走过的历史路径</td>
+</tr>
+<tr>
+<td>ArrayList<Integer></td>
+<td>stateDepth</td>
+<td>历史路径里对应的每一个的深度</td>
+</tr>
+<tr>
+<td>ArrayList&lt;Types.ACTIONS&gt;</td>
+<td>limitDepthFirstAction</td>
+<td>存储limitdfs中的每一步动作</td>
+</tr>
+<tr>
+<td>double</td>
+<td>bestCost</td>
+<td>精灵与目标在state中最优状态的距离</td>
+</tr>
+<tr>
+<td>Vector2d</td>
+<td>goalpos</td>
+<td>门的位置</td>
+</tr>
+<tr>
+<td>Vector2d</td>
+<td>keypos</td>
+<td>钥匙的位置</td>
+</tr>
+</tbody>
+</table>
+<h4 data-line="72" class="code-line" id="%E5%87%BD%E6%95%B0%E7%AE%80%E4%BB%8B">函数简介</h4>
+<table>
+<thead>
+<tr>
+<th>返回类型</th>
+<th>函数名</th>
+<th>传入参数</th>
+<th>函数功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void</td>
+<td>initAgent</td>
+<td>null</td>
+<td>初始化Agent</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>isInCloseList</td>
+<td>StateObservation obs</td>
+<td>检测是否在历史状态中</td>
+</tr>
+<tr>
+<td>void</td>
+<td>limitDepthFirst</td>
+<td>StateObservation stateObs, ElapsedCpuTimer elapsedTimer, int depth</td>
+<td>计算从stateObs出发的受限层数为depth的深度优先路径</td>
+</tr>
+<tr>
+<td>Types.ACTIONS</td>
+<td>act</td>
+<td>StateObservation stateObs, ElapsedCpuTimer elapsedTimer</td>
+<td>根据局面stateObs调用limitDepthFirst并返回当轮动作</td>
+</tr>
+<tr>
+<td>void</td>
+<td>debugPrint</td>
+<td>Types.ACTIONS act</td>
+<td>输出act动作信息</td>
+</tr>
+<tr>
+<td>void</td>
+<td>debugPrintAllAction</td>
+<td>ArrayList&lt;Types.ACTIONS&gt; actions</td>
+<td>输入actions中所有动作信息</td>
+</tr>
+<tr>
+<td>double</td>
+<td>getDistance</td>
+<td>Vector2d vec1, Vector2d vec2</td>
+<td>返回vec1与vec2的曼哈顿距离</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>avatarGetKey</td>
+<td>StateObservation stateObs</td>
+<td>判断精灵是否得到钥匙</td>
+</tr>
+<tr>
+<td>double</td>
+<td>heuristic</td>
+<td>StateObservation stateObs</td>
+<td>启发式函数，返回局面评分</td>
+</tr>
+<tr>
+<td>void</td>
+<td>debugPos</td>
+<td>Vector2d vec, String head</td>
+<td>输出vec的位置信息</td>
+</tr>
+</tbody>
+</table>
+<h4 data-line="88" class="code-line" id="%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81">核心代码</h4>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">limitDepthFirst</span><span class="hljs-params">(StateObservation stateObs, ElapsedCpuTimer elapsedTimer, <span class="hljs-keyword">int</span> depth)</span></span>{
+    <span class="hljs-keyword">if</span>(Reach the end of limitDepthFirst){
+        nowStateScore = heuristic(stateObs);
+        <span class="hljs-keyword">if</span>(nowStateScore better than bestCost)
+            bestAction = now actions;           
+        <span class="hljs-keyword">return</span>;
+    }
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(stateObs is not game start){
+        <span class="hljs-keyword">if</span>(stateObs in closeList &amp;&amp; depth same)
+            <span class="hljs-keyword">return</span>;
+        <span class="hljs-keyword">else</span>{
+            closeList.add(stateObs);
+            stateDepth.add(depth);
+        }
+    }
+    <span class="hljs-keyword">else</span>{ <span class="hljs-comment">// at the beginning of limitdfs, init all</span>
+        closeList.clear();
+        stateDepth.clear();
+    }
+
+    <span class="hljs-keyword">for</span>(all actions in stateObs){
+        <span class="hljs-keyword">try</span> <span class="hljs-keyword">this</span> action in stCopy;
+        limitDepthFirstAction.add(action);
+        <span class="hljs-keyword">if</span>(Game win) {
+            nowStateScore = heuristic(stateObs);
+            <span class="hljs-keyword">if</span>(nowStateScore better than bestCost)
+                bestAction = now actions;
+            stCopy = stateObs.copy(); <span class="hljs-comment">// reset stCopy</span>
+            limitDepthFirstAction.delete(action);
+            <span class="hljs-keyword">continue</span>;
+        }               
+        <span class="hljs-keyword">else</span>{
+            limitDepthFirst(stCopy,elapsedTimer,depth);
+            stCopy = stateObs.copy(); <span class="hljs-comment">// reset stCopy</span>
+            limitDepthFirstAction.delete(action);
+            <span class="hljs-keyword">continue</span>;
+        }
+    }
+}
+
+</div></code></pre>
+<h3 data-line="133" class="code-line" id="%E4%BB%BB%E5%8A%A1%E4%B8%89-a%E6%90%9C%E7%B4%A2">任务三 A*搜索</h3>
+<p data-line="135" class="code-line">根据自己自行测试，可以在有限时间内完成第二关与第三关的搜索并成功通关。</p>
+<h4 data-line="137" class="code-line" id="%E5%8F%98%E9%87%8F%E7%AE%80%E4%BB%8B">变量简介</h4>
+<table>
+<thead>
+<tr>
+<th>变量类型</th>
+<th>变量名</th>
+<th>变量含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ArrayList<StateObservation></td>
+<td>closeList</td>
+<td>存储已经走过的历史路径</td>
+</tr>
+<tr>
+<td>PriorityQueue<Node></td>
+<td>openList</td>
+<td>存储尚未走的已探索到的步骤</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>getAnswer</td>
+<td>是否得到了能走到终点的答案</td>
+</tr>
+<tr>
+<td>ArrayList&lt;Types.ACTIONS&gt;</td>
+<td>aStarAction</td>
+<td>存储aStar中的每一步动作</td>
+</tr>
+<tr>
+<td>Vector2d</td>
+<td>goalpos</td>
+<td>门的位置</td>
+</tr>
+<tr>
+<td>Vector2d</td>
+<td>keypos</td>
+<td>钥匙的位置</td>
+</tr>
+</tbody>
+</table>
+<h4 data-line="148" class="code-line" id="%E5%87%BD%E6%95%B0%E7%AE%80%E4%BB%8B">函数简介</h4>
+<table>
+<thead>
+<tr>
+<th>返回类型</th>
+<th>函数名</th>
+<th>传入参数</th>
+<th>函数功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void</td>
+<td>initAgent</td>
+<td>null</td>
+<td>初始化Agent</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>isInCloseList</td>
+<td>StateObservation obs</td>
+<td>检测是否在历史状态中</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>isInOpenList</td>
+<td>StateObservation obs</td>
+<td>检测是否在尚未走的已搜索到的区域中</td>
+</tr>
+<tr>
+<td>void</td>
+<td>aStar</td>
+<td>StateObservation stateObs, ElapsedCpuTimer elapsedTimer, int depth</td>
+<td>计算从stateObs出发的受时间限制的aStar路径</td>
+</tr>
+<tr>
+<td>Types.ACTIONS</td>
+<td>act</td>
+<td>StateObservation stateObs, ElapsedCpuTimer elapsedTimer</td>
+<td>根据局面stateObs调用aStar并返回当轮动作</td>
+</tr>
+<tr>
+<td>double</td>
+<td>getDistance</td>
+<td>Vector2d vec1, Vector2d vec2</td>
+<td>返回vec1与vec2的曼哈顿距离</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>avatarGetKey</td>
+<td>StateObservation stateObs</td>
+<td>判断精灵是否得到钥匙</td>
+</tr>
+<tr>
+<td>double</td>
+<td>heuristic</td>
+<td>StateObservation stateObs</td>
+<td>启发式函数，返回局面评分</td>
+</tr>
+</tbody>
+</table>
+<h4 data-line="162" class="code-line" id="%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81">核心代码</h4>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title">aStar</span><span class="hljs-params">(StateObservation stateObs, ElapsedCpuTimer elapsedTimer)</span> </span>{
+    initAgent();
+    openList.add(startNode); <span class="hljs-comment">// 将初始状态加入openList</span>
+    <span class="hljs-keyword">while</span>(!openList.isEmpty())
+    {
+        Node tmp = openList.poll(); <span class="hljs-comment">// 取得分最高的节点tmp</span>
+        aStarAction = tmp.actions; <span class="hljs-comment">// 将aStarAction初始化为tmp从起点到当前位置的所有动作 </span>
+        closeList.add(tmp.stateObs.copy()); <span class="hljs-comment">// 将tmp的状态加入closeList中标记已走过</span>
+
+        <span class="hljs-keyword">for</span>(all actions in stateObs){
+            stCopy = tmp.stateObs.copy();
+            <span class="hljs-keyword">try</span> <span class="hljs-keyword">this</span> action in stCopy;
+            aStarAction.add(act);
+            <span class="hljs-keyword">if</span>(Game win) {
+                getAnswer = <span class="hljs-keyword">true</span>;
+                <span class="hljs-keyword">return</span> ; <span class="hljs-comment">// 最终的序列步骤在aStarAction中</span>
+            }
+            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(Game over || stateObs in closeList) { <span class="hljs-comment">// 如果游戏结束或发现曾走过，则回溯</span>
+                aStarAction.delete(action);
+                <span class="hljs-keyword">continue</span>;
+            }
+            <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(stateObs in openList){ <span class="hljs-comment">// 如果发现当前局面在openList待尝试</span>
+                <span class="hljs-keyword">if</span>(<span class="hljs-keyword">new</span> actions better than old){ <span class="hljs-comment">// 如果当前走法优于之间走法</span>
+                    refresh openList; <span class="hljs-comment">// 则更新动作</span>
+                }
+                aStarAction.delete(action); <span class="hljs-comment">// 回溯</span>
+            }
+            <span class="hljs-keyword">else</span>{ <span class="hljs-comment">// 这是一个新的动作</span>
+                openList.add(<span class="hljs-keyword">new</span> Node(stCopy,heuristic(stCopy),aStarAction)); <span class="hljs-comment">// 加入新的动作</span>
+                aStarAction.delete(action); <span class="hljs-comment">// 回溯</span>
+            }
+        }
+    }
+}
+
+</div></code></pre>
+<h3 data-line="202" class="code-line" id="%E4%BB%BB%E5%8A%A1%E5%9B%9B-%E8%92%99%E7%89%B9%E5%8D%A1%E6%B4%9B%E6%A0%91%E6%90%9C%E7%B4%A2">任务四 蒙特卡洛树搜索</h3>
+<h4 data-line="204" class="code-line" id="%E7%AE%97%E6%B3%95%E6%A1%86%E6%9E%B6">算法框架</h4>
+<pre class="hljs"><code><div>while(时间限制内){
+    treePolicy选择一个当前可达状态selected；
+    对子状态执行rollOut，得到得分；
+    从selected开始执行backUp；
+}
+通过mostVisitedAction返回次数最大的动作并作为结果；
+</div></code></pre>
+<h4 data-line="215" class="code-line" id="%E5%87%BD%E6%95%B0%E7%AE%80%E4%BB%8B">函数简介</h4>
+<table>
+<thead>
+<tr>
+<th>函数名</th>
+<th>传入参数</th>
+<th>函数功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rollOut</td>
+<td>null</td>
+<td>不断随机向下搜索，当游戏结束或达到递归层数后对状态评分。更新Agent得分bound后返回得分。</td>
+</tr>
+<tr>
+<td>backUp</td>
+<td>SingleTreeNode node, double result</td>
+<td>传入一个节点与他的得分，对这个节点与他的所有祖先节点，访问次数+1，总分+=得分。</td>
+</tr>
+<tr>
+<td>treePolicy</td>
+<td>null</td>
+<td>如果当前节点有子节点未访问，则返回其中一个，否则调用uct从所有子节点中选择一个。</td>
+</tr>
+<tr>
+<td><strong>uct</strong></td>
+<td>null</td>
+<td>根据子节点总分，访问次数，Agent的得分bound计算节点分数，然后选择得分最高的返回。</td>
+</tr>
+</tbody>
+</table>
+<h4 data-line="224" class="code-line" id="%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81">核心代码</h4>
+<p data-line="226" class="code-line">uct算法作为关键，他的子节点计算方式如下：</p>
+<p data-line="228" class="code-line">childValue(平均估值) = <eq><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mi>o</mi><mi>r</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>i</mi><mi>z</mi><mi>e</mi><mo>(</mo><mfrac><mrow><mi>c</mi><mi>h</mi><mi>i</mi><mi>l</mi><mi>d</mi><mi>T</mi><mi>o</mi><mi>t</mi><mi>a</mi><mi>l</mi><mi>V</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi></mrow><mrow><mi>c</mi><mi>h</mi><mi>i</mi><mi>l</mi><mi>d</mi><mi>V</mi><mi>i</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>T</mi><mi>i</mi><mi>m</mi><mi>e</mi><mi>s</mi><mo>+</mo><mi>ϵ</mi></mrow></mfrac><mo>)</mo><mo separator="true">,</mo><mo>(</mo><mi>ϵ</mi><mo>=</mo><mn>1</mn><mo>∗</mo><mn>1</mn><msup><mn>0</mn><mo>−</mo></msup><mn>6</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">normalize(\frac{childTotalValue}{childVisitTimes+  \epsilon}),(\epsilon = 1*10^-6)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8801079999999999em;"></span><span class="strut bottom" style="height:1.283439em;vertical-align:-0.403331em;"></span><span class="base"><span class="mord mathit">n</span><span class="mord mathit">o</span><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mord mathit">m</span><span class="mord mathit">a</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">i</span><span class="mord mathit" style="margin-right:0.04398em;">z</span><span class="mord mathit">e</span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathit mtight">c</span><span class="mord mathit mtight">h</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight" style="margin-right:0.01968em;">l</span><span class="mord mathit mtight">d</span><span class="mord mathit mtight" style="margin-right:0.22222em;">V</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">s</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">t</span><span class="mord mathit mtight" style="margin-right:0.13889em;">T</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">m</span><span class="mord mathit mtight">e</span><span class="mord mathit mtight">s</span><span class="mbin mtight">+</span><span class="mord mathit mtight">ϵ</span></span></span></span><span style="top:-3.15em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.2em;"><svg width='400em' height='0.2em' viewBox='0 0 400000 200' preserveAspectRatio='xMinYMin slice'><path d='M0 80H400000 v40H0z M0 80H400000 v40H0z'/></svg></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathit mtight">c</span><span class="mord mathit mtight">h</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight" style="margin-right:0.01968em;">l</span><span class="mord mathit mtight">d</span><span class="mord mathit mtight" style="margin-right:0.13889em;">T</span><span class="mord mathit mtight">o</span><span class="mord mathit mtight">t</span><span class="mord mathit mtight">a</span><span class="mord mathit mtight" style="margin-right:0.01968em;">l</span><span class="mord mathit mtight" style="margin-right:0.22222em;">V</span><span class="mord mathit mtight">a</span><span class="mord mathit mtight" style="margin-right:0.01968em;">l</span><span class="mord mathit mtight">u</span><span class="mord mathit mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span><span class="mpunct">,</span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mopen">(</span><span class="mord mathit">ϵ</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mord rule" style="margin-right:0.2777777777777778em;"></span><span class="mord">1</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.771331em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mbin mtight">−</span></span></span></span></span></span></span></span><span class="mord">6</span><span class="mclose">)</span></span></span></span></eq><br>
+uctValue(节点分数) = <eq><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>h</mi><mi>i</mi><mi>l</mi><mi>d</mi><mi>V</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mo>+</mo><msqrt><mrow><mfrac><mrow><mn>2</mn><mi>ln</mi><mo>⁡</mo><mrow><mi>p</mi><mi>a</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>V</mi><mi>i</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>T</mi><mi>i</mi><mi>m</mi><mi>e</mi><mi>s</mi><mo>+</mo><mn>1</mn></mrow></mrow><mrow><mi>c</mi><mi>h</mi><mi>i</mi><mi>l</mi><mi>d</mi><mi>V</mi><mi>i</mi><mi>s</mi><mi>i</mi><mi>t</mi><mi>T</mi><mi>i</mi><mi>m</mi><mi>e</mi><mi>s</mi><mo>+</mo><mi>ϵ</mi></mrow></mfrac></mrow></msqrt><mo>+</mo><mi>ξ</mi><mo separator="true">,</mo><mi>ξ</mi></mrow><annotation encoding="application/x-tex">childValue + \sqrt{\frac{2\ln{parentVisitTimes + 1}}{childVisitTimes + \epsilon}}+\xi, \xi</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.2494425000000002em;"></span><span class="strut bottom" style="height:1.8400000000000003em;vertical-align:-0.5905575em;"></span><span class="base"><span class="mord mathit">c</span><span class="mord mathit">h</span><span class="mord mathit">i</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">d</span><span class="mord mathit" style="margin-right:0.22222em;">V</span><span class="mord mathit">a</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">u</span><span class="mord mathit">e</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.2494425000000002em;"><span class="svg-align" style="top:-3.8em;"><span class="pstrut" style="height:3.8em;"></span><span class="mord" style="padding-left:1em;"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322159999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathit mtight">c</span><span class="mord mathit mtight">h</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight" style="margin-right:0.01968em;">l</span><span class="mord mathit mtight">d</span><span class="mord mathit mtight" style="margin-right:0.22222em;">V</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">s</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">t</span><span class="mord mathit mtight" style="margin-right:0.13889em;">T</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">m</span><span class="mord mathit mtight">e</span><span class="mord mathit mtight">s</span><span class="mbin mtight">+</span><span class="mord mathit mtight">ϵ</span></span></span></span><span style="top:-3.15em;"><span class="pstrut" style="height:3em;"></span><span class="stretchy" style="height:0.2em;"><svg width='400em' height='0.2em' viewBox='0 0 400000 200' preserveAspectRatio='xMinYMin slice'><path d='M0 80H400000 v40H0z M0 80H400000 v40H0z'/></svg></span></span><span style="top:-3.446108em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord rule mtight" style="margin-right:0.19516666666666668em;"></span><span class="mop mtight">ln</span><span class="mord rule mtight" style="margin-right:0.19516666666666668em;"></span><span class="mord mtight"><span class="mord mathit mtight">p</span><span class="mord mathit mtight">a</span><span class="mord mathit mtight" style="margin-right:0.02778em;">r</span><span class="mord mathit mtight">e</span><span class="mord mathit mtight">n</span><span class="mord mathit mtight">t</span><span class="mord mathit mtight" style="margin-right:0.22222em;">V</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">s</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">t</span><span class="mord mathit mtight" style="margin-right:0.13889em;">T</span><span class="mord mathit mtight">i</span><span class="mord mathit mtight">m</span><span class="mord mathit mtight">e</span><span class="mord mathit mtight">s</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span><span style="top:-3.2094424999999998em;"><span class="pstrut" style="height:3.8em;"></span><span class="hide-tail" style="min-width:1.02em;height:1.8800000000000001em;"><svg width='400em' height='1.8800000000000001em' viewBox='0 0 400000 1944' preserveAspectRatio='xMinYMin slice'><path d='M1001,80H400000v40H1013.1s-83.4,268,-264.1,840c-180.7,
+572,-277,876.3,-289,913c-4.7,4.7,-12.7,7,-24,7s-12,0,-12,0c-1.3,-3.3,-3.7,-11.7,
+-7,-25c-35.3,-125.3,-106.7,-373.3,-214,-744c-10,12,-21,25,-33,39s-32,39,-32,39
+c-6,-5.3,-15,-14,-27,-26s25,-30,25,-30c26.7,-32.7,52,-63,76,-91s52,-60,52,-60
+s208,722,208,722c56,-175.3,126.3,-397.3,211,-666c84.7,-268.7,153.8,-488.2,207.5,
+-658.5c53.7,-170.3,84.5,-266.8,92.5,-289.5c4,-6.7,10,-10,18,-10z
+M1001 80H400000v40H1013z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.5905575em;"></span></span></span></span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mord rule" style="margin-right:0.2222222222222222em;"></span><span class="mord mathit" style="margin-right:0.04601em;">ξ</span><span class="mpunct">,</span><span class="mord rule" style="margin-right:0.16666666666666666em;"></span><span class="mord mathit" style="margin-right:0.04601em;">ξ</span></span></span></span></eq>是噪声</p>
+<p data-line="231" class="code-line">简而言之，访问次数少的，平均分高的子节点节点分数更高，更容易被roolOut选中。由于在act中我们返回的是访问次数最多的子节点作为状态，所以可以看出uct对于可能成功的子节点更友好。</p>
+<h3 data-line="233" class="code-line" id="%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C">运行结果</h3>
+<p data-line="234" class="code-line"><img src="https://img-blog.csdn.net/20180325172725593?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2p1c3RpY2Uw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="lvl0"></p>
+<p data-line="236" class="code-line"><img src="https://img-blog.csdn.net/2018032517273549?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2p1c3RpY2Uw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="lvl1"></p>
+<p data-line="238" class="code-line"><img src="https://img-blog.csdn.net/20180325172713150?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2p1c3RpY2Uw/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="lvl2"></p>
+
+</body></html>

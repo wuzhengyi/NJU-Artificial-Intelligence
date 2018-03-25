@@ -1,9 +1,7 @@
 package controllers.limitdepthfirst;
 
-import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Vector;
 
 import core.game.Observation;
 import core.game.StateObservation;
@@ -22,7 +20,7 @@ import tools.Vector2d;
 
 public class Agent extends AbstractPlayer {
 
-    protected ArrayList<StateObservation> hasStateObs = new ArrayList<>();
+    protected ArrayList<StateObservation> closeList = new ArrayList<>();
     protected ArrayList<Integer> stateDepth = new ArrayList<>();
     protected final int MAX_DEPTH  = 6;
     /**
@@ -33,7 +31,7 @@ public class Agent extends AbstractPlayer {
     /**
     *  The number of now Step
     */
-    protected double dist = Double.POSITIVE_INFINITY;
+    protected double bestCost = Double.POSITIVE_INFINITY;
     protected ArrayList<Types.ACTIONS> bestAction = new ArrayList<>();
     Vector2d goalpos = null; //目标位置
     Vector2d keypos = null; //钥匙的位置
@@ -50,9 +48,9 @@ public class Agent extends AbstractPlayer {
     /** 
      * Judge whether the State obs has occurred
      */
-    protected int isInOldStateObs(StateObservation obs){
+    protected int isInCloseList(StateObservation obs){
         int i=0;
-        for(StateObservation tmp:hasStateObs){
+        for(StateObservation tmp: closeList){
             if(tmp.equalPosition(obs)){
                 return i;
             }
@@ -75,7 +73,7 @@ public class Agent extends AbstractPlayer {
     /**
      *  get now State Observation score 
      */
-    protected double getStateObsScore(StateObservation stateObs) {
+    protected double heuristic(StateObservation stateObs) {
 
         Vector2d avatarpos = stateObs.getAvatarPosition();
         if(goalpos == null || keypos == null){
@@ -104,9 +102,9 @@ public class Agent extends AbstractPlayer {
     }
 
     protected void initAgent(){
-        dist = Double.POSITIVE_INFINITY;
+        bestCost = Double.POSITIVE_INFINITY;
         // grid = so.getObservationGrid();
-        hasStateObs.clear();
+        closeList.clear();
         stateDepth.clear();
         bestAction.clear();
         limitDepthFirstAction.clear();
@@ -144,30 +142,30 @@ public class Agent extends AbstractPlayer {
 
     protected void limitDepthFirst(StateObservation stateObs, ElapsedCpuTimer elapsedTimer, int depth){
 //        System.out.println("depth: "+ depth);
-//        System.out.println("score: " + dist);
+//        System.out.println("score: " + bestCost);
         if(depth-- <= 0){
-            double temp = getStateObsScore(stateObs);
+            double temp = heuristic(stateObs);
 
-            if(temp < dist){
-                dist = temp - (depth+1);
+            if(temp < bestCost){
+                bestCost = temp - (depth+1);
                 bestAction.clear();
                 bestAction.addAll(limitDepthFirstAction);
-                System.out.println("best score: "+ dist);
+                System.out.println("best score: "+ bestCost);
                 debugPrintAllAction(bestAction);
             }
             return;
         }
         else if(depth != MAX_DEPTH){
-            if(isInOldStateObs(stateObs)!=-1 && depth == stateDepth.get(isInOldStateObs(stateObs))){
+            if(isInCloseList(stateObs)!=-1 && depth == stateDepth.get(isInCloseList(stateObs))){
                 return;
             }
             else{
-                hasStateObs.add(stateObs);
+                closeList.add(stateObs);
                 stateDepth.add(depth);
             }
         }
         else{
-            hasStateObs.clear();
+            closeList.clear();
             stateDepth.clear();
         }
 
@@ -185,10 +183,10 @@ public class Agent extends AbstractPlayer {
 //            System.out.println("try it");
             limitDepthFirstAction.add(action);
             if(stCopy.getGameWinner()==Types.WINNER.PLAYER_WINS) {
-                System.out.println("Found it! Score: " + (-depth-1) + " now is "+dist);
+                System.out.println("Found it! Score: " + (-depth-1) + " now is "+ bestCost);
 
-                if(- (depth+1) < dist){
-                    dist =  - (depth+1);
+                if(- (depth+1) < bestCost){
+                    bestCost =  - (depth+1);
                     bestAction.clear();
                     bestAction.addAll(limitDepthFirstAction);
                     debugPrintAllAction(limitDepthFirstAction);

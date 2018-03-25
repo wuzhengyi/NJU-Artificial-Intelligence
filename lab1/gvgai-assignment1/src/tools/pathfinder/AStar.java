@@ -35,7 +35,7 @@ public class AStar
         return xDiff + yDiff;
 
         //This is Euclidean distance(sub-optimal here).
-        //return curNode.position.dist(goalNode.position);
+        //return curNode.position.bestCost(goalNode.position);
     }
 
 

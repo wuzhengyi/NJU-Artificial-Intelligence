@@ -16,6 +16,6 @@ public class Test
     public static void main(String[] args)
     {
         
-        ArcadeMachine.playOneGame( "examples/gridphysics/bait.txt", "examples/gridphysics/bait_lvl2.txt", null, new Random().nextInt());
+        ArcadeMachine.playOneGame( "examples/gridphysics/bait.txt", "examples/gridphysics/bait_lvl4.txt", null, new Random().nextInt());
     }
 }

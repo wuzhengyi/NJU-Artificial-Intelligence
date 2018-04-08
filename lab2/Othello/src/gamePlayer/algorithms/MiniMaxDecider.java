@@ -113,8 +113,8 @@ public class MiniMaxDecider implements Decider {
 				State childState = action.applyTo(state);
 				float newValue = this.miniMaxRecursor(childState, depth + 1, !maximize);
 				//Record the best value
-                                if (flag * newValue > flag * value) 
-                                    value = newValue;
+				if (flag * newValue > flag * value) 
+					value = newValue;
 			} catch (InvalidActionException e) {
                                 //Should not go here
 				throw new RuntimeException("Invalid action!");

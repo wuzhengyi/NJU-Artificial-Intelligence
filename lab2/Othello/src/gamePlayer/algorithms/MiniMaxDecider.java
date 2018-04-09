@@ -53,6 +53,8 @@ public class MiniMaxDecider implements Decider {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Action decide(State state) {
 		// Choose randomly between equally good options
+		float alpha = Float.NEGATIVE_INFINITY;
+		float beta = Float.POSITIVE_INFINITY;
 		float value = maximize ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
 		List<Action> bestActions = new ArrayList<Action>();
 		// Iterate!
@@ -61,7 +63,7 @@ public class MiniMaxDecider implements Decider {
 			try {
 				// Algorithm!
 				State newState = action.applyTo(state);
-				float newValue = this.miniMaxRecursor(newState, 1, !this.maximize);
+				float newValue = this.miniMaxRecursor(newState, 1, !this.maximize, alpha, beta);
 				// Better candidates?
 				if (flag * newValue > flag * value) {
 					value = newValue;
@@ -89,7 +91,7 @@ public class MiniMaxDecider implements Decider {
 	 * @return The best point count we can get on this branch of the state space to the specified depth.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public float miniMaxRecursor(State state, int depth, boolean maximize) {
+	public float miniMaxRecursor(State state, int depth, boolean maximize, float alpha, float beta) {
 		// Has this state already been computed?
 		if (computedStates.containsKey(state)) 
                     // Return the stored result
@@ -111,12 +113,22 @@ public class MiniMaxDecider implements Decider {
 			// Check it. Is it better? If so, keep it.
 			try {
 				State childState = action.applyTo(state);
-				float newValue = this.miniMaxRecursor(childState, depth + 1, !maximize);
+				float newValue = this.miniMaxRecursor(childState, depth + 1, !maximize, alpha, beta);
 				//Record the best value
 				if (flag * newValue > flag * value) 
 					value = newValue;
+				//alpha-beta cut
+				if (maximize) {
+					if (value >= beta)
+						return value;
+					alpha = alpha > value ? alpha : value;
+				} else {
+					if (value <= alpha)
+						return value;
+					beta = beta < value ? beta : value;
+				}
 			} catch (InvalidActionException e) {
-                                //Should not go here
+                //Should not go here
 				throw new RuntimeException("Invalid action!");
 			}
 		}

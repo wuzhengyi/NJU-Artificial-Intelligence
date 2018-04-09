@@ -325,7 +325,7 @@ public class Othello extends JFrame {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// 0 - Human plays first, 1000ms - time for computer decision (for MTDDecider)
-				Othello frame = new Othello(0, 1000, 2);
+				Othello frame = new Othello(0, 1000, 8);
 			}
 		});
 

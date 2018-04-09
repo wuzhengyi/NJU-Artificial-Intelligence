@@ -43,3 +43,62 @@
 未使用，返回`value`。
 
 ## Task 2
+
+对下列函数加入`alpha`与`beta`参数，进行$\alpha-\beta$剪枝
+```java
+public float miniMaxRecursor(State state, int depth, boolean maximize, float alpha, float beta) {
+    // Has this state already been computed?
+    if (computedStates.containsKey(state)) 
+                // Return the stored result
+                return computedStates.get(state);
+    // Is this state done?
+    if (state.getStatus() != Status.Ongoing)
+                // Store and return
+                return finalize(state, state.heuristic());
+    // Have we reached the end of the line?
+    if (depth == this.depth)
+                //Return the heuristic value
+                return state.heuristic();
+            
+    // If not, recurse further. Identify the best actions to take.
+    float value = maximize ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
+    int flag = maximize ? 1 : -1;
+    List<Action> test = state.getActions();
+    for (Action action : test) {
+        // Check it. Is it better? If so, keep it.
+        try {
+            State childState = action.applyTo(state);
+            float newValue = this.miniMaxRecursor(childState, depth + 1, !maximize, alpha, beta);
+            //Record the best value
+            if (flag * newValue > flag * value) 
+                value = newValue;
+            //alpha-beta cut
+            if (maximize) {
+                if (value >= beta)
+                    return value;
+                alpha = alpha > value ? alpha : value;
+            } else {
+                if (value <= alpha)
+                    return value;
+                beta = beta < value ? beta : value;
+            }
+        } catch (InvalidActionException e) {
+            //Should not go here
+            throw new RuntimeException("Invalid action!");
+        }
+    }
+    // Store so we don't have to compute it again.
+    return finalize(state, value);
+}
+```
+
+在`Othello`中递归深度为2时，加入$\alpha-\beta$剪枝后速度几乎毫无变化。
+逐渐加深深度，由于深度不大，所以效果依旧不太明显。
+
+最后将`Othello`中递归深度由2改为8
+- 在原有未剪枝的版本，前两步还在1s左右，到第三步就默默的不动了。
+- 在加入$\alpha-\beta$剪枝后，每一步反应时间大约在1s左右。
+
+可见加入了$\alpha-\beta$剪枝后速度大幅度提升。
+
+### Task 3

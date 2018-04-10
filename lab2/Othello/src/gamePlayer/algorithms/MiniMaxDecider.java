@@ -77,6 +77,7 @@ public class MiniMaxDecider implements Decider {
 		}
 		// If there are more than one best actions, pick one of the best randomly
 		Collections.shuffle(bestActions);
+		System.out.println(bestActions.size());
 		return bestActions.get(0);
 	}
 	
@@ -115,17 +116,18 @@ public class MiniMaxDecider implements Decider {
 				State childState = action.applyTo(state);
 				float newValue = this.miniMaxRecursor(childState, depth + 1, !maximize, alpha, beta);
 				//Record the best value
-				if (flag * newValue > flag * value) 
+				if (flag * newValue > flag * value) {
 					value = newValue;
-				//alpha-beta cut
-				if (maximize) {
-					if (value >= beta)
-						return value;
-					alpha = alpha > value ? alpha : value;
-				} else {
-					if (value <= alpha)
-						return value;
-					beta = beta < value ? beta : value;
+					//alpha-beta cut
+					if (maximize && value > alpha) {
+						if (value > beta)
+							return finalize(state, value);
+						alpha = value;
+					} else if (!maximize && value < beta) {
+						if (value < alpha)
+							return finalize(state, value);
+						beta = value;
+					}
 				}
 			} catch (InvalidActionException e) {
                 //Should not go here

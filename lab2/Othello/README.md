@@ -70,17 +70,18 @@ public float miniMaxRecursor(State state, int depth, boolean maximize, float alp
             State childState = action.applyTo(state);
             float newValue = this.miniMaxRecursor(childState, depth + 1, !maximize, alpha, beta);
             //Record the best value
-            if (flag * newValue > flag * value) 
+            if (flag * newValue > flag * value) {
                 value = newValue;
-            //alpha-beta cut
-            if (maximize) {
-                if (value >= beta)
-                    return value;
-                alpha = alpha > value ? alpha : value;
-            } else {
-                if (value <= alpha)
-                    return value;
-                beta = beta < value ? beta : value;
+                //alpha-beta cut
+                if (maximize && value > alpha) {
+                    if (value > beta)
+                        return finalize(state, value);
+                    alpha = value;
+                } else if (!maximize && value < beta) {
+                    if (value < alpha)
+                        return finalize(state, value);
+                    beta = value;
+                }
             }
         } catch (InvalidActionException e) {
             //Should not go here
@@ -102,3 +103,36 @@ public float miniMaxRecursor(State state, int depth, boolean maximize, float alp
 可见加入了$\alpha-\beta$剪枝后速度大幅度提升。
 
 ### Task 3
+
+先简单解释一下原有`heuristic`函数：
+```java
+public float heuristic() {
+    Status s = this.getStatus();
+    int winconstant = 0;
+    switch (s) {
+    case PlayerOneWon:
+        winconstant = 5000;
+        break;
+    case PlayerTwoWon:
+        winconstant = -5000;
+        break;
+    default:
+        winconstant = 0;
+        break;
+    }
+    return this.pieceDifferential() +
+        8 * this.moveDifferential() +
+        300 * this.cornerDifferential() +
+        1 * this.stabilityDifferential() + 
+        winconstant;
+}
+```
+其中`winconstant`是得分，在这里以玩家A举例，B同理。
+
+- 如果A能赢则给5000分的分值
+- 已有多少个棋子，分值1分
+- 有多少个可动点，分值8分
+- 有多少个顶角点，分值300分（顶角点绝对不会被翻转，而且变相相当于两列钦定为你的颜色）
+- 有多少个可翻转棋子，分值1分
+
+其中，他将棋盘分为水平，竖直与两个对角线，一个四个方向计分并累加。

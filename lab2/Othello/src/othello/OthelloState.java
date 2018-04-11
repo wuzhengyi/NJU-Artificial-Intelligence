@@ -740,6 +740,22 @@ public class OthelloState implements State {
 	}
 
 	/**
+	* Get the difference between the number of corners player 1 and player 2 occupy.
+	* @return The aforementioned difference.
+	*/
+	private float edgeDifferential() {
+		float diff = 0;
+		for(byte i=0;i<(byte) dimension;i+(byte)1){
+			diff += getSpotOnLine(hBoard[0], i) == 2 ? 1 : -1;
+			diff += getSpotOnLine(hBoard[dimension - 1], i) == 2 ? 1 : -1;
+			diff += getSpotOnLine(i, hBoard[0]) == 2 ? 1 : -1;
+			diff += getSpotOnLine(i, hBoard[dimension - 1]) == 2 ? 1 : -1;
+
+		}
+		return diff;
+	}
+
+	/**
 	* Get the difference between the number of next to corners player 1 and player 2 occupy.
 	* @return The aforementioned difference.
 	*/
@@ -778,6 +794,7 @@ public class OthelloState implements State {
 		  300 * this.cornerDifferential() +
 		   1 * this.stabilityDifferential() -
 		   50 * this.nextCornerDifferential() + 
+		   20 * this.edgeDifferential() +
 		   winconstant;
 	}
 	

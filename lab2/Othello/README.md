@@ -8,11 +8,11 @@
 
 ### 变量定义
 
-| 类型      | 变量名            | 意义                         |
-|---------|----------------|----------------------------|
-| boolean | maximize       | 为true时最大化val,为false时最小化val |
-| int     | depth          | 限制了递归的深度                   |
-| Map     | computedStates | 用Hash存储不同局面及得分，避免重复运算
+| 类型    | 变量名         | 意义                                   |
+| ------- | -------------- | -------------------------------------- |
+| boolean | maximize       | 为true时最大化val,为false时最小化val   |
+| int     | depth          | 限制了递归的深度                       |
+| Map     | computedStates | 用Hash存储不同局面及得分，避免重复运算 |
 
 ### MiniMaxDecider(boolean maximize, int depth)
 
@@ -97,6 +97,7 @@ public float miniMaxRecursor(State state, int depth, boolean maximize, float alp
 逐渐加深深度，由于深度不大，所以效果依旧不太明显。
 
 最后将`Othello`中递归深度由2改为8
+
 - 在原有未剪枝的版本，前两步还在1s左右，到第三步就默默的不动了。
 - 在加入$\alpha-\beta$剪枝后，每一步反应时间大约在1s左右。
 
@@ -104,7 +105,8 @@ public float miniMaxRecursor(State state, int depth, boolean maximize, float alp
 
 ### Task 3
 
-先简单解释一下原有`heuristic`函数：
+#### 原有`heuristic`函数
+
 ```java
 public float heuristic() {
     Status s = this.getStatus();
@@ -132,7 +134,85 @@ public float heuristic() {
 - 如果A能赢则给5000分的分值
 - 已有多少个棋子，分值1分
 - 有多少个可动点，分值8分
-- 有多少个顶角点，分值300分（顶角点绝对不会被翻转，而且变相相当于两列钦定为你的颜色）
+- 有多少个顶角点，分值300分（顶角点绝对不会被翻转，而且变相相当于两边与一个对角线钦定为你的颜色）
 - 有多少个可翻转棋子，分值1分
 
 其中，他将棋盘分为水平，竖直与两个对角线，一个四个方向计分并累加。
+
+#### 优化后的`heuristic`函数
+
+```java
+public float heuristic() {
+    Status s = this.getStatus();
+    int winconstant = 0;
+    switch (s) {
+    case PlayerOneWon:
+        winconstant = 5000;
+        break;
+    case PlayerTwoWon:
+        winconstant = -5000;
+        break;
+    default:
+        winconstant = 0;
+        break;
+    }
+    return this.pieceDifferential() +
+        8 * this.moveDifferential() +
+        300 * this.cornerDifferential() +
+        1 * this.stabilityDifferential() -
+        50 * this.nextCornerDifferential() +
+        20 * this.edgeDifferential() +
+        winconstant;
+}
+```
+
+主要的改动在于我添加了新的考虑因素，简单介绍一下两个新的函数
+
+##### `nextCornerDifferential()`
+
+这个函数主要考虑了22点，22点的定义是指
+.| .|   .| .|   .| .|   .| .
+ -|-|-|-|-|-|-|-
+.|x|   .| .|   .| .|x| .
+.| .|   .| .|   .| .|   .| .
+.| .|   .| .|   .| .|   .| .
+.| .|   .| .|   .| .|   .| .
+.| .|   .| .|   .| .|   .| .
+.|x|   .| .|   .| .|x| .
+.| .|   .| .|   .| .|   .| .
+
+图中的四个一定要慎重考虑，尽量逼迫对方棋子下在这里，
+这样的话就可以将棋下在4个corner处，从而相当于霸占了两个边加一个对角线。
+所以我将这四个点给予负分50的权重。
+
+##### edgeDifferential()
+
+这个函数用来计算四条边的棋子数量，因为中间的棋子贴边，相比之下他的比分要高于其他位置，
+我将边上的棋子，赋予20的权重
+
+### Task 4
+
+MTD（f）通过仅执行零窗口$\alpha$-$\beta$搜索来获得其效率，并具有“良好”的界限（变量$\beta$）。 在NegaScout中，使用宽搜索窗口调用搜索，就像`AlphaBeta（root，-INFINITY，+ INFINITY，depth）`一样，所以返回值在一次调用中位于$\alpha$和$\beta$的值之间。 在MTD（f）中，AlphaBeta失败的高或低，分别返回minimax值的下界或上界。 零窗口调用会导致更多的截断，但返回的信息更少 - 仅限于最小值。 为了找到极小极大值，MTD（f）多次调用`AlphaBeta`，收敛它并最终找到确切的值。 转置表存储和检索存储器中树的先前搜索的部分以减少重新探索搜索树的部分的开销。
+
+其中，`Map<State, SearchNode> transpositionTable`作为一个转置表，减少了多次搜索对于重复情况的开销。
+
+下面给出`MTDF`的伪代码：
+
+```code
+function MTDF(root, f, d)
+    g := f
+    upperBound := +∞
+    lowerBound := -∞
+    while lowerBound < upperBound
+        β := max(g, lowerBound+1)
+        g := AlphaBetaWithMemory(root, β-1, β, d)
+        if g < β then
+            upperBound := g
+        else
+            lowerBound := g
+    return g
+```
+
+其中f为猜测的值，为动作action a的分值，最快的算法收敛，第一次通话可能为0。
+
+d为深度，迭代加深深度优先搜索可以通过多次调用`MTDF()`并增加d来完成，并提供f中最好的先前结果

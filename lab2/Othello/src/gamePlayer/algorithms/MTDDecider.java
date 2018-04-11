@@ -152,9 +152,7 @@ public class MTDDecider implements Decider {
 						alpha = Math.max(alpha, value);
 					} else*/
 					//	beta = Math.min(beta, value);
-						
-					
-					
+											
 				} catch (InvalidActionException e) {
 					e.printStackTrace();
 				} catch (OutOfTimeException e) {

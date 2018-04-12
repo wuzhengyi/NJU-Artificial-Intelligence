@@ -1,0 +1,1013 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/2.4.1/github-markdown.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.css">
+    <link rel="stylesheet" href="https://gitcdn.xyz/repo/goessner/mdmath/master/css/texmath.css">
+    <link rel="stylesheet" href="https://gitcdn.xyz/repo/goessner/mdmath/master/css/vscode-texmath.css">
+
+</head>
+
+<body class="markdown-body">
+    <h1 data-line="0" class="code-line" id="">人工智能 实验二</h1>
+    <p data-line="2" class="code-line">
+        <strong>151220129 计科 吴政亿
+            <a href="mailto:18805156360@163.com">18805156360@163.com</a>
+        </strong>
+    </p>
+    <h2 data-line="4" class="code-line" id="task-1">Task 1</h2>
+    <p data-line="6" class="code-line">
+        <code>MiniMaxDecider.java</code>的代码相比于书本中的样例，将min与max进行了合并，用一个
+        <code>boolean maximize</code>代替，以及通过+1,-1将两个函数抽象成一个，下面对三个函数进行简要介绍。</p>
+    <h3 data-line="8" class="code-line" id="">变量定义</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>类型</th>
+                <th>变量名</th>
+                <th>意义</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>boolean</td>
+                <td>maximize</td>
+                <td>为true时最大化val,为false时最小化val</td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>depth</td>
+                <td>限制了递归的深度</td>
+            </tr>
+            <tr>
+                <td>Map</td>
+                <td>computedStates</td>
+                <td>用Hash存储不同局面及得分，避免重复运算</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3 data-line="16" class="code-line" id="minimaxdeciderboolean-maximize--int-depth">MiniMaxDecider(boolean maximize, int depth)</h3>
+    <p data-line="18" class="code-line">对上面的变量进行初始化</p>
+    <h3 data-line="20" class="code-line" id="public-action-decidestate-state">public Action decide(State state)</h3>
+    <ol>
+        <li data-line="22" class="code-line">根据maximize将value初始化为负无穷或正无穷</li>
+        <li data-line="23" class="code-line">定义
+            <code>bestAction</code>用于存储最高得分的动作序列</li>
+        <li data-line="24" class="code-line">初始化因子
+            <code>flag</code>为-1或+1.</li>
+        <li data-line="25" class="code-line">遍历所有当前局势下所有可能的动作
+            <ul>
+                <li data-line="26" class="code-line">定义变量
+                    <code>newState</code>与
+                    <code>newValue</code>为此动作的预期局势与得分</li>
+                <li data-line="27" class="code-line">如果
+                    <code>maximize == true</code>则取其中的得分最高项，反之取最低得分</li>
+                <li data-line="28" class="code-line">两个if是为了保证
+                    <code>bestAction</code>中的actions得分相同且均为最优解</li>
+            </ul>
+        </li>
+        <li data-line="29" class="code-line">从
+            <code>bestAction</code>中随机选取一个action执行</li>
+    </ol>
+    <h3 data-line="31" class="code-line" id="public-float-minimaxrecursorstate-state--int-depth--boolean-maximize">public float miniMaxRecursor(State state, int depth, boolean maximize)</h3>
+    <p data-line="33" class="code-line">此函数与上一个函数
+        <code>decide</code>相似，是抽象出来的递归部分</p>
+    <ol>
+        <li data-line="35" class="code-line">如果
+            <code>computedStates</code>中存在，即已经计算过得分，则直接返回</li>
+        <li data-line="36" class="code-line">如果游戏结束或者到达递归最底层，则直接返回当前局面由启发式函数计算的评估分数</li>
+        <li data-line="37" class="code-line">与函数
+            <code>decide</code>大体相同</li>
+        <li data-line="38" class="code-line">最后返回评估分数</li>
+    </ol>
+    <h3 data-line="40" class="code-line" id="private-float-finalizestate-state--float-value">private float finalize(State state, float value)</h3>
+    <p data-line="42" class="code-line">未使用，返回
+        <code>value</code>。</p>
+    <h2 data-line="44" class="code-line" id="task-2">Task 2</h2>
+    <p data-line="46" class="code-line">对下列函数加入
+        <code>alpha</code>与
+        <code>beta</code>参数，进行
+        <eq>
+            <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mi>α</mi>
+                                <mo>−</mo>
+                                <mi>β</mi>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\alpha-\beta</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                <span class="katex-html" aria-hidden="true">
+                    <span class="strut" style="height:0.69444em;"></span>
+                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                    <span class="base">
+                        <span class="mord mathit" style="margin-right:0.0037em;">α</span>
+                        <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                        <span class="mbin">−</span>
+                        <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
+                    </span>
+                </span>
+            </span>
+        </eq>剪枝</p>
+    <pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">float</span> <span class="hljs-title">miniMaxRecursor</span><span class="hljs-params">(State state, <span class="hljs-keyword">int</span> depth, <span class="hljs-keyword">boolean</span> maximize, <span class="hljs-keyword">float</span> alpha, <span class="hljs-keyword">float</span> beta)</span> </span>{
+    <span class="hljs-comment">// Has this state already been computed?</span>
+    <span class="hljs-keyword">if</span> (computedStates.containsKey(state)) 
+                <span class="hljs-comment">// Return the stored result</span>
+                <span class="hljs-keyword">return</span> computedStates.get(state);
+    <span class="hljs-comment">// Is this state done?</span>
+    <span class="hljs-keyword">if</span> (state.getStatus() != Status.Ongoing)
+                <span class="hljs-comment">// Store and return</span>
+                <span class="hljs-keyword">return</span> finalize(state, state.heuristic());
+    <span class="hljs-comment">// Have we reached the end of the line?</span>
+    <span class="hljs-keyword">if</span> (depth == <span class="hljs-keyword">this</span>.depth)
+                <span class="hljs-comment">//Return the heuristic value</span>
+                <span class="hljs-keyword">return</span> state.heuristic();
+            
+    <span class="hljs-comment">// If not, recurse further. Identify the best actions to take.</span>
+    <span class="hljs-keyword">float</span> value = maximize ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
+    <span class="hljs-keyword">int</span> flag = maximize ? <span class="hljs-number">1</span> : -<span class="hljs-number">1</span>;
+    List&lt;Action&gt; test = state.getActions();
+    <span class="hljs-keyword">for</span> (Action action : test) {
+        <span class="hljs-comment">// Check it. Is it better? If so, keep it.</span>
+        <span class="hljs-keyword">try</span> {
+            State childState = action.applyTo(state);
+            <span class="hljs-keyword">float</span> newValue = <span class="hljs-keyword">this</span>.miniMaxRecursor(childState, depth + <span class="hljs-number">1</span>, !maximize, alpha, beta);
+            <span class="hljs-comment">//Record the best value</span>
+            <span class="hljs-keyword">if</span> (flag * newValue &gt; flag * value) {
+                value = newValue;
+                <span class="hljs-comment">//alpha-beta cut</span>
+                <span class="hljs-keyword">if</span> (maximize &amp;&amp; value &gt; alpha) {
+                    <span class="hljs-keyword">if</span> (value &gt; beta)
+                        <span class="hljs-keyword">return</span> finalize(state, value);
+                    alpha = value;
+                } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!maximize &amp;&amp; value &lt; beta) {
+                    <span class="hljs-keyword">if</span> (value &lt; alpha)
+                        <span class="hljs-keyword">return</span> finalize(state, value);
+                    beta = value;
+                }
+            }
+        } <span class="hljs-keyword">catch</span> (InvalidActionException e) {
+            <span class="hljs-comment">//Should not go here</span>
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> RuntimeException(<span class="hljs-string">"Invalid action!"</span>);
+        }
+    }
+    <span class="hljs-comment">// Store so we don't have to compute it again.</span>
+    <span class="hljs-keyword">return</span> finalize(state, value);
+}
+</div></code></pre>
+    <p data-line="95" class="code-line">在
+        <code>Othello</code>中递归深度为2时，加入
+        <eq>
+            <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mi>α</mi>
+                                <mo>−</mo>
+                                <mi>β</mi>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\alpha-\beta</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                <span class="katex-html" aria-hidden="true">
+                    <span class="strut" style="height:0.69444em;"></span>
+                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                    <span class="base">
+                        <span class="mord mathit" style="margin-right:0.0037em;">α</span>
+                        <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                        <span class="mbin">−</span>
+                        <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
+                    </span>
+                </span>
+            </span>
+        </eq>剪枝后速度几乎毫无变化。 逐渐加深深度，由于深度不大，所以效果依旧不太明显。
+    </p>
+    <p data-line="98" class="code-line">最后将
+        <code>Othello</code>中递归深度由2改为8</p>
+    <ul>
+        <li data-line="100" class="code-line">在原有未剪枝的版本，前两步还在1s左右，到第三步就默默的不动了。</li>
+        <li data-line="101" class="code-line">在加入
+            <eq>
+                <span class="katex">
+                    <span class="katex-mathml">
+                        <math>
+                            <semantics>
+                                <mrow>
+                                    <mi>α</mi>
+                                    <mo>−</mo>
+                                    <mi>β</mi>
+                                </mrow>
+                                <annotation encoding="application/x-tex">\alpha-\beta</annotation>
+                            </semantics>
+                        </math>
+                    </span>
+                    <span class="katex-html" aria-hidden="true">
+                        <span class="strut" style="height:0.69444em;"></span>
+                        <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                        <span class="base">
+                            <span class="mord mathit" style="margin-right:0.0037em;">α</span>
+                            <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                            <span class="mbin">−</span>
+                            <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                            <span class="mord mathit" style="margin-right:0.05278em;">β</span>
+                        </span>
+                    </span>
+                </span>
+            </eq>剪枝后，每一步反应时间大约在1s左右。</li>
+    </ul>
+    <p data-line="103" class="code-line">可见加入了
+        <eq>
+            <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mi>α</mi>
+                                <mo>−</mo>
+                                <mi>β</mi>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\alpha-\beta</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                <span class="katex-html" aria-hidden="true">
+                    <span class="strut" style="height:0.69444em;"></span>
+                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                    <span class="base">
+                        <span class="mord mathit" style="margin-right:0.0037em;">α</span>
+                        <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                        <span class="mbin">−</span>
+                        <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
+                    </span>
+                </span>
+            </span>
+        </eq>剪枝后速度大幅度提升。</p>
+    <h3 data-line="105" class="code-line" id="task-3">Task 3</h3>
+    <p data-line="107" class="code-line">先简单介绍一下框架基本内容</p>
+    <table>
+        <thead>
+            <tr>
+                <th>变量名</th>
+                <th>解释</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>dimension</td>
+                <td>棋局大小8*8</td>
+            </tr>
+            <tr>
+                <td>move</td>
+                <td>轮到哪个角色下棋</td>
+            </tr>
+            <tr>
+                <td>Board</td>
+                <td>分为h/v/d1/d2，分别是水平，竖直与两个对角线，在代码中经常分别对应于状态0,1,2,3.</td>
+            </tr>
+            <tr>
+                <td>getLines</td>
+                <td>得到四个方向的棋子,按照上面的顺序存在lines[]中</td>
+            </tr>
+        </tbody>
+    </table>
+    <h4 data-line="115" class="code-line" id="heuristic">原有
+        <code>heuristic</code>函数</h4>
+    <pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">float</span> <span class="hljs-title">heuristic</span><span class="hljs-params">()</span> </span>{
+    Status s = <span class="hljs-keyword">this</span>.getStatus();
+    <span class="hljs-keyword">int</span> winconstant = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">switch</span> (s) {
+    <span class="hljs-keyword">case</span> PlayerOneWon:
+        winconstant = <span class="hljs-number">5000</span>;
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> PlayerTwoWon:
+        winconstant = -<span class="hljs-number">5000</span>;
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">default</span>:
+        winconstant = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">break</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.pieceDifferential() +
+        <span class="hljs-number">8</span> * <span class="hljs-keyword">this</span>.moveDifferential() +
+        <span class="hljs-number">300</span> * <span class="hljs-keyword">this</span>.cornerDifferential() +
+        <span class="hljs-number">1</span> * <span class="hljs-keyword">this</span>.stabilityDifferential() + 
+        winconstant;
+}
+</div></code></pre>
+    <p data-line="139" class="code-line">其中
+        <code>winconstant</code>是得分，在这里以玩家A举例，B同理。</p>
+    <ul>
+        <li data-line="141" class="code-line">如果A能赢则给5000分的分值</li>
+        <li data-line="142" class="code-line">已有多少个棋子，分值1分</li>
+        <li data-line="143" class="code-line">有多少个可动点，分值8分</li>
+        <li data-line="144" class="code-line">有多少个顶角点，分值300分（顶角点绝对不会被翻转，而且变相相当于两边与一个对角线钦定为你的颜色）</li>
+        <li data-line="145" class="code-line">有多少个可翻转棋子，分值1分</li>
+    </ul>
+    <p data-line="147" class="code-line">其中，他将棋盘分为水平，竖直与两个对角线，一个四个方向计分并累加。</p>
+    <h4 data-line="149" class="code-line" id="heuristic">优化后的
+        <code>heuristic</code>函数</h4>
+    <pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">float</span> <span class="hljs-title">heuristic</span><span class="hljs-params">()</span> </span>{
+    Status s = <span class="hljs-keyword">this</span>.getStatus();
+    <span class="hljs-keyword">int</span> winconstant = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">switch</span> (s) {
+    <span class="hljs-keyword">case</span> PlayerOneWon:
+        winconstant = <span class="hljs-number">5000</span>;
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> PlayerTwoWon:
+        winconstant = -<span class="hljs-number">5000</span>;
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">default</span>:
+        winconstant = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">break</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.pieceDifferential() +
+        <span class="hljs-number">8</span> * <span class="hljs-keyword">this</span>.moveDifferential() +
+        <span class="hljs-number">300</span> * <span class="hljs-keyword">this</span>.cornerDifferential() +
+        <span class="hljs-number">150</span> * <span class="hljs-keyword">this</span>.fixDifferential() +
+        <span class="hljs-number">1</span> * <span class="hljs-keyword">this</span>.stabilityDifferential() -
+        <span class="hljs-number">50</span> * <span class="hljs-keyword">this</span>.nextCornerDifferential() +
+        <span class="hljs-number">20</span> * <span class="hljs-keyword">this</span>.edgeDifferential() +
+        <span class="hljs-number">20</span> * <span class="hljs-keyword">this</span>.centerDifferential() +
+        winconstant;
+}
+</div></code></pre>
+    <p data-line="178" class="code-line">主要的改动在于我添加了新的考虑因素，简单介绍一下</p>
+    <h5 data-line="180" class="code-line" id="nextcornerdifferential">
+        <code>nextCornerDifferential()</code>
+    </h5>
+    <p data-line="182" class="code-line">这个函数主要考虑了22点，22点的定义是指</p>
+    <table>
+        <thead>
+            <tr>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>.</td>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+        </tbody>
+    </table>
+    <p data-line="193" class="code-line">图中的四个一定要慎重考虑，尽量逼迫对方棋子下在这里， 这样的话就可以将棋下在4个corner处，从而相当于霸占了两个边加一个对角线。 所以我将这四个点给予负分50的权重。
+    </p>
+    <h5 data-line="197" class="code-line" id="edgedifferential">edgeDifferential()</h5>
+    <p data-line="199" class="code-line">这个函数用来计算四条边的棋子数量，因为中间的棋子贴边，相比之下他的比分要高于其他位置，</p>
+    <table>
+        <thead>
+            <tr>
+                <th>x</th>
+                <th>x</th>
+                <th>x</th>
+                <th>x</th>
+                <th>x</th>
+                <th>x</th>
+                <th>x</th>
+                <th>x</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+            </tr>
+            <tr>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+            </tr>
+            <tr>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+            </tr>
+            <tr>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+            </tr>
+            <tr>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+            </tr>
+            <tr>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+            </tr>
+            <tr>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+                <td>x</td>
+            </tr>
+        </tbody>
+    </table>
+    <p data-line="211" class="code-line">我将边上的棋子，赋予20的权重</p>
+    <h5 data-line="213" class="code-line" id="centerdifferential">centerDifferential</h5>
+    <p data-line="215" class="code-line">对中间的棋子赋予20的权重，因为他们可以分割战场</p>
+    <table>
+        <thead>
+            <tr>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>x</td>
+                <td>x</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+        </tbody>
+    </table>
+    <p data-line="227" class="code-line">当占据了中间的位置时，可以更方便的打乱对面密集的棋局。</p>
+    <h5 data-line="229" class="code-line" id="fixdifferential">fixDifferential</h5>
+    <p data-line="231" class="code-line">从四个顶角开始，递归的计算哪些点同顶角一样不可能被翻转了。</p>
+    <table>
+        <thead>
+            <tr>
+                <th>x</th>
+                <th>
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mo>→</mo>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\rightarrow</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.36687em;"></span>
+                                <span class="strut bottom" style="height:0.36687em;vertical-align:0em;"></span>
+                                <span class="base">
+                                    <span class="mrel">→</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>
+                </th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mo>←</mo>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\leftarrow</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.36687em;"></span>
+                                <span class="strut bottom" style="height:0.36687em;vertical-align:0em;"></span>
+                                <span class="base">
+                                    <span class="mrel">←</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>
+                </th>
+                <th>x</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mo>↓</mo>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\downarrow</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.69444em;"></span>
+                                <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                                <span class="base">
+                                    <span class="mrel">↓</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>
+                </td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mo>↓</mo>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\downarrow</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.69444em;"></span>
+                                <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                                <span class="base">
+                                    <span class="mrel">↓</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>
+                </td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+            </tr>
+            <tr>
+                <td>
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mo>↑</mo>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\uparrow</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.69444em;"></span>
+                                <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                                <span class="base">
+                                    <span class="mrel">↑</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>
+                </td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mo>↑</mo>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\uparrow</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.69444em;"></span>
+                                <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                                <span class="base">
+                                    <span class="mrel">↑</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>
+                </td>
+            </tr>
+            <tr>
+                <td>x</td>
+                <td>
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mo>→</mo>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\rightarrow</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.36687em;"></span>
+                                <span class="strut bottom" style="height:0.36687em;vertical-align:0em;"></span>
+                                <span class="base">
+                                    <span class="mrel">→</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>
+                </td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>.</td>
+                <td>
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mo>←</mo>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\leftarrow</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.36687em;"></span>
+                                <span class="strut bottom" style="height:0.36687em;vertical-align:0em;"></span>
+                                <span class="base">
+                                    <span class="mrel">←</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>
+                </td>
+                <td>x</td>
+            </tr>
+        </tbody>
+    </table>
+    <p data-line="243" class="code-line">由于这些棋子已经确定了他们的颜色不会被改变，所以给与150的权重，因为他们相比与corner战略性小一点</p>
+    <h3 data-line="245" class="code-line" id="task-4">Task 4</h3>
+    <p data-line="247" class="code-line">MTD（f）通过仅执行零窗口
+        <eq>
+            <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mi>α</mi>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\alpha</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                <span class="katex-html" aria-hidden="true">
+                    <span class="strut" style="height:0.43056em;"></span>
+                    <span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span>
+                    <span class="base">
+                        <span class="mord mathit" style="margin-right:0.0037em;">α</span>
+                    </span>
+                </span>
+            </span>
+        </eq>-
+        <eq>
+            <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mi>β</mi>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\beta</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                <span class="katex-html" aria-hidden="true">
+                    <span class="strut" style="height:0.69444em;"></span>
+                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                    <span class="base">
+                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
+                    </span>
+                </span>
+            </span>
+        </eq>搜索来获得其效率，并具有“良好”的界限（变量
+        <eq>
+            <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mi>β</mi>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\beta</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                <span class="katex-html" aria-hidden="true">
+                    <span class="strut" style="height:0.69444em;"></span>
+                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                    <span class="base">
+                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
+                    </span>
+                </span>
+            </span>
+        </eq>）。 在NegaScout中，使用宽搜索窗口调用搜索，就像
+        <code>AlphaBeta（root，-INFINITY，+ INFINITY，depth）</code>一样，所以返回值在一次调用中位于
+        <eq>
+            <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mi>α</mi>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\alpha</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                <span class="katex-html" aria-hidden="true">
+                    <span class="strut" style="height:0.43056em;"></span>
+                    <span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span>
+                    <span class="base">
+                        <span class="mord mathit" style="margin-right:0.0037em;">α</span>
+                    </span>
+                </span>
+            </span>
+        </eq>和
+        <eq>
+            <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mi>β</mi>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\beta</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                <span class="katex-html" aria-hidden="true">
+                    <span class="strut" style="height:0.69444em;"></span>
+                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                    <span class="base">
+                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
+                    </span>
+                </span>
+            </span>
+        </eq>的值之间。 在MTD（f）中，AlphaBeta失败的高或低，分别返回minimax值的下界或上界。 零窗口调用会导致更多的截断，但返回的信息更少 - 仅限于最小值。 为了找到极小极大值，MTD（f）多次调用
+        <code>AlphaBeta</code>，收敛它并最终找到确切的值。 转置表存储和检索存储器中树的先前搜索的部分以减少重新探索搜索树的部分的开销。</p>
+    <p data-line="249" class="code-line">其中，
+        <code>Map&lt;State, SearchNode&gt; transpositionTable</code>作为一个转置表，减少了多次搜索对于重复情况的开销。</p>
+    <p data-line="251" class="code-line">下面给出
+        <code>MTDF</code>的伪代码：</p>
+    <pre class="hljs"><code><div>function MTDF(root, f, d)
+    g := f
+    upperBound := +∞
+    lowerBound := -∞
+    while lowerBound &lt; upperBound
+        β := max(g, lowerBound+1)
+        g := AlphaBetaWithMemory(root, β-1, β, d)
+        if g &lt; β then
+            upperBound := g
+        else
+            lowerBound := g
+    return g
+</div></code></pre>
+    <p data-line="268" class="code-line">其中f为猜测的值，为动作action a的分值，最快的算法收敛，第一次通话可能为0。</p>
+    <p data-line="270" class="code-line">d为深度，迭代加深深度优先搜索可以通过多次调用
+        <code>MTDF()</code>并增加d来完成，并提供f中最好的先前结果</p>
+
+</body>
+
+</html>

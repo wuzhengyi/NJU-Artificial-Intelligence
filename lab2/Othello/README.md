@@ -1,7 +1,10 @@
-# 人工智能 实验二
+# 作业2: 黑白棋游戏 实验报告
 
-**151220129 计科 吴政亿 18805156360@163.com**
+**吴政亿 151220129 18805156360@163.com**   
+(南京大学 计算机科学与技术系, 南京 210093)
 
+**摘要**：介绍MiniMax搜索的实现；应用AlphaBeta剪枝并比较速度；理解heuristic函数并改进；阅读并理解MTDDecider类并与MiniMaxDecider类比较异同   
+**关键词**：MiniMax搜索，AlphaBeta剪枝，heuristic函数，MTD(f)算法
 ## Task 1
 
 `MiniMaxDecider.java`的代码相比于书本中的样例，将min与max进行了合并，用一个`boolean maximize`代替，以及通过+1,-1将两个函数抽象成一个，下面对三个函数进行简要介绍。
@@ -98,7 +101,7 @@ public float miniMaxRecursor(State state, int depth, boolean maximize, float alp
 
 最后将`Othello`中递归深度由2改为8
 
-- 在原有未剪枝的版本，前两步还在1s左右，到第三步就默默的不动了。
+- 在原有未剪枝的版本，前两步还在2s左右，到第三步就默默的不动了。
 - 在加入$\alpha-\beta$剪枝后，每一步反应时间大约在1s左右。
 
 可见加入了$\alpha-\beta$剪枝后速度大幅度提升。
@@ -112,6 +115,7 @@ public float miniMaxRecursor(State state, int depth, boolean maximize, float alp
 | move      | 轮到哪个角色下棋                                                                |
 | Board     | 分为h/v/d1/d2，分别是水平，竖直与两个对角线，在代码中经常分别对应于状态0,1,2,3. |
 | getLines  | 得到四个方向的棋子,按照上面的顺序存在lines[]中                                  |
+| 棋盘表示  | 8*8棋盘每个地方用2bits存储,共65536种情况,00-空,01-墙,10-P1,11-P2                              |
 
 #### 原有`heuristic`函数
 
@@ -140,10 +144,10 @@ public float heuristic() {
 其中`winconstant`是得分，在这里以玩家A举例，B同理。
 
 - 如果A能赢则给5000分的分值
-- 已有多少个棋子，分值1分
-- 有多少个可动点，分值8分
-- 有多少个顶角点，分值300分（顶角点绝对不会被翻转，而且变相相当于两边与一个对角线钦定为你的颜色）
-- 有多少个可翻转棋子，分值1分
+- 已有多少个棋子的差值，分值1分
+- 有多少个可动点的差值，分值8分
+- 有多少个顶角点的差值，分值300分(顶角点绝对不会被翻转，而且变相相当于两边与一个对角线钦定为你的颜色)
+- 有多少个可翻转棋子的差值(在水平竖直与两个对角线四个方向，能翻转的棋子数的差值)，分值1分
 
 其中，他将棋盘分为水平，竖直与两个对角线，一个四个方向计分并累加。
 
@@ -245,11 +249,13 @@ x            | $\rightarrow$ | .   | .   | .   | .   | $\leftarrow$ | x
 
 ### Task 4
 
-MTD（f）通过仅执行零窗口$\alpha$-$\beta$搜索来获得其效率，并具有“良好”的界限（变量$\beta$）。 在NegaScout中，使用宽搜索窗口调用搜索，就像`AlphaBeta（root，-INFINITY，+ INFINITY，depth）`一样，所以返回值在一次调用中位于$\alpha$和$\beta$的值之间。 在MTD（f）中，AlphaBeta失败的高或低，分别返回minimax值的下界或上界。 零窗口调用会导致更多的截断，但返回的信息更少 - 仅限于最小值。 为了找到极小极大值，MTD（f）多次调用`AlphaBeta`，收敛它并最终找到确切的值。 转置表存储和检索存储器中树的先前搜索的部分以减少重新探索搜索树的部分的开销。
+#### MTD(f)算法介绍
 
-其中，`Map<State, SearchNode> transpositionTable`作为一个转置表，减少了多次搜索对于重复情况的开销。
+该算法通过使用零大小的搜索窗口多次调用`AlphaBetaWithMemory`来工作。通过放大`minimax`值来搜索。每个`AlphaBeta`调用返回`minimax`值的界限。边界存储在上边界和下边界中，形成围绕该搜索深度的真正最小值的区间。 `Plus`和`minus INFINITY`是叶值范围之外的值的简写。当上限和下限碰撞时，找到最小值。
 
-下面给出`MTDF`的伪代码：
+`MTD(f)`仅从零窗口`alpha-beta`搜索获得效率，并使用“良好”边界(变量beta)进行零窗口搜索。通常情况下，`AlphaBeta`会在`AlphaBeta(root，-INFINITY，+ INFINITY，depth)`中使用广泛的搜索窗口进行调用，确保返回值位于`alpha`和`beta`的值之间。在`MTD(f)`中，使用了一个零大小的窗口，这样在每次调用时`AlphaBeta`将会失败或失败，分别返回最小值或最小值的上限或下限。零窗口调用会导致更多的截断，但返回的信息更少 - 仅限于最小最大值。然而，要找到它，`MTD(f)`必须多次调用`AlphaBeta`，才能收敛它。在重复调用`AlphaBeta`时重新搜索部分搜索树的开销会在使用存储和检索其在内存中看到的节点的`AlphaBeta`版本时消失。
+
+#### MTD(f)伪代码
 
 ```code
 function MTDF(root, f, d)
@@ -269,3 +275,23 @@ function MTDF(root, f, d)
 其中f为猜测的值，为动作action a的分值，最快的算法收敛，第一次通话可能为0。
 
 d为深度，迭代加深深度优先搜索可以通过多次调用`MTDF()`并增加d来完成，并提供f中最好的先前结果
+
+#### MTDDecider类
+
+Name | introduction
+---|----
+Map<State, SearchNode> transpositionTable | 转置表，减少了多次搜索对于重复情况的开销。
+class ActionValuePaipublic | 存储上一次迭代信息
+Action iterative_deepening(State root) | 限制时间内进行零窗口搜索，根据`USE_MTDF`选择搜索算法
+int MTDF(State root, int firstGuess, int depth) | MTDF算法，迭代搜索返回当前局面分值
+int AlphaBetaWithMemory(State state, int alpha, int beta, int depth, int color) | 应用了置换表的$\alpha - \beta$剪枝算法，将已搜索的节点存储在置换表中，如果深度>4,则分为depth与depth-2进行搜索
+
+#### MTD与MiniMax对比
+
+##### 共同点
+
+MTD是基于MiniMax的改进算法，保留了极大极小值与深度限制的部分
+
+##### 不同点
+
+MTD在MiniMax的基础上，引入了置换表技术，减少了重复计算带来的开销，并且增加了AlphaBeta剪枝

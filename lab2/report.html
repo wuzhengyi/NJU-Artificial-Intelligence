@@ -12,17 +12,21 @@
 </head>
 
 <body class="markdown-body">
-    <h1 data-line="0" class="code-line" id="">人工智能 实验二</h1>
-    <p data-line="2" class="code-line">
-        <strong>151220129 计科 吴政亿
+    <h1 data-line="0" class="code-line code-line" id="2">作业2: 黑白棋游戏 实验报告</h1>
+    <p data-line="2" class="code-line code-line">
+        <strong>吴政亿 151220129
             <a href="mailto:18805156360@163.com">18805156360@163.com</a>
         </strong>
-    </p>
-    <h2 data-line="4" class="code-line" id="task-1">Task 1</h2>
-    <p data-line="6" class="code-line">
+        <br> (南京大学 计算机科学与技术系, 南京 210093)</p>
+    <p data-line="5" class="code-line code-line">
+        <strong>摘要</strong>：介绍MiniMax搜索的实现；应用AlphaBeta剪枝并比较速度；理解heuristic函数并改进；阅读并理解MTDDecider类并与MiniMaxDecider类比较异同
+        <br>
+        <strong>关键词</strong>：MiniMax搜索，AlphaBeta剪枝，heuristic函数，MTD(f)算法</p>
+    <h2 data-line="7" class="code-line code-line" id="task-1">Task 1</h2>
+    <p data-line="9" class="code-line code-line">
         <code>MiniMaxDecider.java</code>的代码相比于书本中的样例，将min与max进行了合并，用一个
         <code>boolean maximize</code>代替，以及通过+1,-1将两个函数抽象成一个，下面对三个函数进行简要介绍。</p>
-    <h3 data-line="8" class="code-line" id="">变量定义</h3>
+    <h3 data-line="11" class="code-line code-line" id="">变量定义</h3>
     <table>
         <thead>
             <tr>
@@ -49,45 +53,45 @@
             </tr>
         </tbody>
     </table>
-    <h3 data-line="16" class="code-line" id="minimaxdeciderboolean-maximize--int-depth">MiniMaxDecider(boolean maximize, int depth)</h3>
-    <p data-line="18" class="code-line">对上面的变量进行初始化</p>
-    <h3 data-line="20" class="code-line" id="public-action-decidestate-state">public Action decide(State state)</h3>
+    <h3 data-line="19" class="code-line code-line" id="minimaxdeciderboolean-maximize--int-depth">MiniMaxDecider(boolean maximize, int depth)</h3>
+    <p data-line="21" class="code-line code-line">对上面的变量进行初始化</p>
+    <h3 data-line="23" class="code-line code-line" id="public-action-decidestate-state">public Action decide(State state)</h3>
     <ol>
-        <li data-line="22" class="code-line">根据maximize将value初始化为负无穷或正无穷</li>
-        <li data-line="23" class="code-line">定义
+        <li data-line="25" class="code-line code-line">根据maximize将value初始化为负无穷或正无穷</li>
+        <li data-line="26" class="code-line code-line">定义
             <code>bestAction</code>用于存储最高得分的动作序列</li>
-        <li data-line="24" class="code-line">初始化因子
+        <li data-line="27" class="code-line code-line">初始化因子
             <code>flag</code>为-1或+1.</li>
-        <li data-line="25" class="code-line">遍历所有当前局势下所有可能的动作
+        <li data-line="28" class="code-line code-line">遍历所有当前局势下所有可能的动作
             <ul>
-                <li data-line="26" class="code-line">定义变量
+                <li data-line="29" class="code-line code-line">定义变量
                     <code>newState</code>与
                     <code>newValue</code>为此动作的预期局势与得分</li>
-                <li data-line="27" class="code-line">如果
+                <li data-line="30" class="code-line code-line">如果
                     <code>maximize == true</code>则取其中的得分最高项，反之取最低得分</li>
-                <li data-line="28" class="code-line">两个if是为了保证
+                <li data-line="31" class="code-line code-line">两个if是为了保证
                     <code>bestAction</code>中的actions得分相同且均为最优解</li>
             </ul>
         </li>
-        <li data-line="29" class="code-line">从
+        <li data-line="32" class="code-line code-line">从
             <code>bestAction</code>中随机选取一个action执行</li>
     </ol>
-    <h3 data-line="31" class="code-line" id="public-float-minimaxrecursorstate-state--int-depth--boolean-maximize">public float miniMaxRecursor(State state, int depth, boolean maximize)</h3>
-    <p data-line="33" class="code-line">此函数与上一个函数
+    <h3 data-line="34" class="code-line code-line" id="public-float-minimaxrecursorstate-state--int-depth--boolean-maximize">public float miniMaxRecursor(State state, int depth, boolean maximize)</h3>
+    <p data-line="36" class="code-line code-line">此函数与上一个函数
         <code>decide</code>相似，是抽象出来的递归部分</p>
     <ol>
-        <li data-line="35" class="code-line">如果
+        <li data-line="38" class="code-line code-line">如果
             <code>computedStates</code>中存在，即已经计算过得分，则直接返回</li>
-        <li data-line="36" class="code-line">如果游戏结束或者到达递归最底层，则直接返回当前局面由启发式函数计算的评估分数</li>
-        <li data-line="37" class="code-line">与函数
+        <li data-line="39" class="code-line code-line">如果游戏结束或者到达递归最底层，则直接返回当前局面由启发式函数计算的评估分数</li>
+        <li data-line="40" class="code-line code-line">与函数
             <code>decide</code>大体相同</li>
-        <li data-line="38" class="code-line">最后返回评估分数</li>
+        <li data-line="41" class="code-line code-line">最后返回评估分数</li>
     </ol>
-    <h3 data-line="40" class="code-line" id="private-float-finalizestate-state--float-value">private float finalize(State state, float value)</h3>
-    <p data-line="42" class="code-line">未使用，返回
+    <h3 data-line="43" class="code-line code-line" id="private-float-finalizestate-state--float-value">private float finalize(State state, float value)</h3>
+    <p data-line="45" class="code-line code-line">未使用，返回
         <code>value</code>。</p>
-    <h2 data-line="44" class="code-line" id="task-2">Task 2</h2>
-    <p data-line="46" class="code-line">对下列函数加入
+    <h2 data-line="47" class="code-line code-line" id="task-2">Task 2</h2>
+    <p data-line="49" class="code-line code-line">对下列函数加入
         <code>alpha</code>与
         <code>beta</code>参数，进行
         <eq>
@@ -163,7 +167,7 @@
     <span class="hljs-keyword">return</span> finalize(state, value);
 }
 </div></code></pre>
-    <p data-line="95" class="code-line">在
+    <p data-line="98" class="code-line code-line">在
         <code>Othello</code>中递归深度为2时，加入
         <eq>
             <span class="katex">
@@ -193,11 +197,11 @@
             </span>
         </eq>剪枝后速度几乎毫无变化。 逐渐加深深度，由于深度不大，所以效果依旧不太明显。
     </p>
-    <p data-line="98" class="code-line">最后将
+    <p data-line="101" class="code-line code-line">最后将
         <code>Othello</code>中递归深度由2改为8</p>
     <ul>
-        <li data-line="100" class="code-line">在原有未剪枝的版本，前两步还在1s左右，到第三步就默默的不动了。</li>
-        <li data-line="101" class="code-line">在加入
+        <li data-line="103" class="code-line code-line">在原有未剪枝的版本，前两步还在2s左右，到第三步就默默的不动了。</li>
+        <li data-line="104" class="code-line code-line">在加入
             <eq>
                 <span class="katex">
                     <span class="katex-mathml">
@@ -226,7 +230,7 @@
                 </span>
             </eq>剪枝后，每一步反应时间大约在1s左右。</li>
     </ul>
-    <p data-line="103" class="code-line">可见加入了
+    <p data-line="106" class="code-line code-line">可见加入了
         <eq>
             <span class="katex">
                 <span class="katex-mathml">
@@ -254,8 +258,8 @@
                 </span>
             </span>
         </eq>剪枝后速度大幅度提升。</p>
-    <h3 data-line="105" class="code-line" id="task-3">Task 3</h3>
-    <p data-line="107" class="code-line">先简单介绍一下框架基本内容</p>
+    <h3 data-line="108" class="code-line code-line" id="task-3">Task 3</h3>
+    <p data-line="110" class="code-line code-line">先简单介绍一下框架基本内容</p>
     <table>
         <thead>
             <tr>
@@ -280,9 +284,13 @@
                 <td>getLines</td>
                 <td>得到四个方向的棋子,按照上面的顺序存在lines[]中</td>
             </tr>
+            <tr>
+                <td>棋盘表示</td>
+                <td>8*8棋盘每个地方用2bits存储,共65536种情况,00-空,01-墙,10-P1,11-P2</td>
+            </tr>
         </tbody>
     </table>
-    <h4 data-line="115" class="code-line" id="heuristic">原有
+    <h4 data-line="119" class="code-line code-line" id="heuristic">原有
         <code>heuristic</code>函数</h4>
     <pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">float</span> <span class="hljs-title">heuristic</span><span class="hljs-params">()</span> </span>{
     Status s = <span class="hljs-keyword">this</span>.getStatus();
@@ -305,17 +313,17 @@
         winconstant;
 }
 </div></code></pre>
-    <p data-line="139" class="code-line">其中
+    <p data-line="143" class="code-line code-line">其中
         <code>winconstant</code>是得分，在这里以玩家A举例，B同理。</p>
     <ul>
-        <li data-line="141" class="code-line">如果A能赢则给5000分的分值</li>
-        <li data-line="142" class="code-line">已有多少个棋子，分值1分</li>
-        <li data-line="143" class="code-line">有多少个可动点，分值8分</li>
-        <li data-line="144" class="code-line">有多少个顶角点，分值300分（顶角点绝对不会被翻转，而且变相相当于两边与一个对角线钦定为你的颜色）</li>
-        <li data-line="145" class="code-line">有多少个可翻转棋子，分值1分</li>
+        <li data-line="145" class="code-line code-line">如果A能赢则给5000分的分值</li>
+        <li data-line="146" class="code-line code-line">已有多少个棋子的差值，分值1分</li>
+        <li data-line="147" class="code-line code-line">有多少个可动点的差值，分值8分</li>
+        <li data-line="148" class="code-line code-line">有多少个顶角点的差值，分值300分(顶角点绝对不会被翻转，而且变相相当于两边与一个对角线钦定为你的颜色)</li>
+        <li data-line="149" class="code-line code-line">有多少个可翻转棋子的差值(在水平竖直与两个对角线四个方向，能翻转的棋子数的差值)，分值1分</li>
     </ul>
-    <p data-line="147" class="code-line">其中，他将棋盘分为水平，竖直与两个对角线，一个四个方向计分并累加。</p>
-    <h4 data-line="149" class="code-line" id="heuristic">优化后的
+    <p data-line="151" class="code-line code-line">其中，他将棋盘分为水平，竖直与两个对角线，一个四个方向计分并累加。</p>
+    <h4 data-line="153" class="code-line code-line" id="heuristic">优化后的
         <code>heuristic</code>函数</h4>
     <pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">float</span> <span class="hljs-title">heuristic</span><span class="hljs-params">()</span> </span>{
     Status s = <span class="hljs-keyword">this</span>.getStatus();
@@ -342,11 +350,11 @@
         winconstant;
 }
 </div></code></pre>
-    <p data-line="178" class="code-line">主要的改动在于我添加了新的考虑因素，简单介绍一下</p>
-    <h5 data-line="180" class="code-line" id="nextcornerdifferential">
+    <p data-line="182" class="code-line code-line">主要的改动在于我添加了新的考虑因素，简单介绍一下</p>
+    <h5 data-line="184" class="code-line code-line" id="nextcornerdifferential">
         <code>nextCornerDifferential()</code>
     </h5>
-    <p data-line="182" class="code-line">这个函数主要考虑了22点，22点的定义是指</p>
+    <p data-line="186" class="code-line code-line">这个函数主要考虑了22点，22点的定义是指</p>
     <table>
         <thead>
             <tr>
@@ -433,10 +441,10 @@
             </tr>
         </tbody>
     </table>
-    <p data-line="193" class="code-line">图中的四个一定要慎重考虑，尽量逼迫对方棋子下在这里， 这样的话就可以将棋下在4个corner处，从而相当于霸占了两个边加一个对角线。 所以我将这四个点给予负分50的权重。
+    <p data-line="197" class="code-line code-line">图中的四个一定要慎重考虑，尽量逼迫对方棋子下在这里， 这样的话就可以将棋下在4个corner处，从而相当于霸占了两个边加一个对角线。 所以我将这四个点给予负分50的权重。
     </p>
-    <h5 data-line="197" class="code-line" id="edgedifferential">edgeDifferential()</h5>
-    <p data-line="199" class="code-line">这个函数用来计算四条边的棋子数量，因为中间的棋子贴边，相比之下他的比分要高于其他位置，</p>
+    <h5 data-line="201" class="code-line code-line" id="edgedifferential">edgeDifferential()</h5>
+    <p data-line="203" class="code-line code-line">这个函数用来计算四条边的棋子数量，因为中间的棋子贴边，相比之下他的比分要高于其他位置，</p>
     <table>
         <thead>
             <tr>
@@ -523,9 +531,9 @@
             </tr>
         </tbody>
     </table>
-    <p data-line="211" class="code-line">我将边上的棋子，赋予20的权重</p>
-    <h5 data-line="213" class="code-line" id="centerdifferential">centerDifferential</h5>
-    <p data-line="215" class="code-line">对中间的棋子赋予20的权重，因为他们可以分割战场</p>
+    <p data-line="215" class="code-line code-line">我将边上的棋子，赋予20的权重</p>
+    <h5 data-line="217" class="code-line code-line" id="centerdifferential">centerDifferential</h5>
+    <p data-line="219" class="code-line code-line">对中间的棋子赋予20的权重，因为他们可以分割战场</p>
     <table>
         <thead>
             <tr>
@@ -612,9 +620,9 @@
             </tr>
         </tbody>
     </table>
-    <p data-line="227" class="code-line">当占据了中间的位置时，可以更方便的打乱对面密集的棋局。</p>
-    <h5 data-line="229" class="code-line" id="fixdifferential">fixDifferential</h5>
-    <p data-line="231" class="code-line">从四个顶角开始，递归的计算哪些点同顶角一样不可能被翻转了。</p>
+    <p data-line="231" class="code-line code-line">当占据了中间的位置时，可以更方便的打乱对面密集的棋局。</p>
+    <h5 data-line="233" class="code-line code-line" id="fixdifferential">fixDifferential</h5>
+    <p data-line="235" class="code-line code-line">从四个顶角开始，递归的计算哪些点同顶角一样不可能被翻转了。</p>
     <table>
         <thead>
             <tr>
@@ -877,120 +885,30 @@
             </tr>
         </tbody>
     </table>
-    <p data-line="243" class="code-line">由于这些棋子已经确定了他们的颜色不会被改变，所以给与150的权重，因为他们相比与corner战略性小一点</p>
-    <h3 data-line="245" class="code-line" id="task-4">Task 4</h3>
-    <p data-line="247" class="code-line">MTD（f）通过仅执行零窗口
-        <eq>
-            <span class="katex">
-                <span class="katex-mathml">
-                    <math>
-                        <semantics>
-                            <mrow>
-                                <mi>α</mi>
-                            </mrow>
-                            <annotation encoding="application/x-tex">\alpha</annotation>
-                        </semantics>
-                    </math>
-                </span>
-                <span class="katex-html" aria-hidden="true">
-                    <span class="strut" style="height:0.43056em;"></span>
-                    <span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span>
-                    <span class="base">
-                        <span class="mord mathit" style="margin-right:0.0037em;">α</span>
-                    </span>
-                </span>
-            </span>
-        </eq>-
-        <eq>
-            <span class="katex">
-                <span class="katex-mathml">
-                    <math>
-                        <semantics>
-                            <mrow>
-                                <mi>β</mi>
-                            </mrow>
-                            <annotation encoding="application/x-tex">\beta</annotation>
-                        </semantics>
-                    </math>
-                </span>
-                <span class="katex-html" aria-hidden="true">
-                    <span class="strut" style="height:0.69444em;"></span>
-                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
-                    <span class="base">
-                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
-                    </span>
-                </span>
-            </span>
-        </eq>搜索来获得其效率，并具有“良好”的界限（变量
-        <eq>
-            <span class="katex">
-                <span class="katex-mathml">
-                    <math>
-                        <semantics>
-                            <mrow>
-                                <mi>β</mi>
-                            </mrow>
-                            <annotation encoding="application/x-tex">\beta</annotation>
-                        </semantics>
-                    </math>
-                </span>
-                <span class="katex-html" aria-hidden="true">
-                    <span class="strut" style="height:0.69444em;"></span>
-                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
-                    <span class="base">
-                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
-                    </span>
-                </span>
-            </span>
-        </eq>）。 在NegaScout中，使用宽搜索窗口调用搜索，就像
-        <code>AlphaBeta（root，-INFINITY，+ INFINITY，depth）</code>一样，所以返回值在一次调用中位于
-        <eq>
-            <span class="katex">
-                <span class="katex-mathml">
-                    <math>
-                        <semantics>
-                            <mrow>
-                                <mi>α</mi>
-                            </mrow>
-                            <annotation encoding="application/x-tex">\alpha</annotation>
-                        </semantics>
-                    </math>
-                </span>
-                <span class="katex-html" aria-hidden="true">
-                    <span class="strut" style="height:0.43056em;"></span>
-                    <span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span>
-                    <span class="base">
-                        <span class="mord mathit" style="margin-right:0.0037em;">α</span>
-                    </span>
-                </span>
-            </span>
-        </eq>和
-        <eq>
-            <span class="katex">
-                <span class="katex-mathml">
-                    <math>
-                        <semantics>
-                            <mrow>
-                                <mi>β</mi>
-                            </mrow>
-                            <annotation encoding="application/x-tex">\beta</annotation>
-                        </semantics>
-                    </math>
-                </span>
-                <span class="katex-html" aria-hidden="true">
-                    <span class="strut" style="height:0.69444em;"></span>
-                    <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
-                    <span class="base">
-                        <span class="mord mathit" style="margin-right:0.05278em;">β</span>
-                    </span>
-                </span>
-            </span>
-        </eq>的值之间。 在MTD（f）中，AlphaBeta失败的高或低，分别返回minimax值的下界或上界。 零窗口调用会导致更多的截断，但返回的信息更少 - 仅限于最小值。 为了找到极小极大值，MTD（f）多次调用
-        <code>AlphaBeta</code>，收敛它并最终找到确切的值。 转置表存储和检索存储器中树的先前搜索的部分以减少重新探索搜索树的部分的开销。</p>
-    <p data-line="249" class="code-line">其中，
-        <code>Map&lt;State, SearchNode&gt; transpositionTable</code>作为一个转置表，减少了多次搜索对于重复情况的开销。</p>
-    <p data-line="251" class="code-line">下面给出
-        <code>MTDF</code>的伪代码：</p>
+    <p data-line="247" class="code-line code-line">由于这些棋子已经确定了他们的颜色不会被改变，所以给与150的权重，因为他们相比与corner战略性小一点</p>
+    <h3 data-line="249" class="code-line code-line" id="task-4">Task 4</h3>
+    <h4 data-line="251" class="code-line code-line" id="mtdf">MTD(f)算法介绍</h4>
+    <p data-line="253" class="code-line code-line">该算法通过使用零大小的搜索窗口多次调用
+        <code>AlphaBetaWithMemory</code>来工作。通过放大
+        <code>minimax</code>值来搜索。每个
+        <code>AlphaBeta</code>调用返回
+        <code>minimax</code>值的界限。边界存储在上边界和下边界中，形成围绕该搜索深度的真正最小值的区间。
+        <code>Plus</code>和
+        <code>minus INFINITY</code>是叶值范围之外的值的简写。当上限和下限碰撞时，找到最小值。</p>
+    <p data-line="255" class="code-line code-line">
+        <code>MTD(f)</code>仅从零窗口
+        <code>alpha-beta</code>搜索获得效率，并使用“良好”边界(变量beta)进行零窗口搜索。通常情况下，
+        <code>AlphaBeta</code>会在
+        <code>AlphaBeta(root，-INFINITY，+ INFINITY，depth)</code>中使用广泛的搜索窗口进行调用，确保返回值位于
+        <code>alpha</code>和
+        <code>beta</code>的值之间。在
+        <code>MTD(f)</code>中，使用了一个零大小的窗口，这样在每次调用时
+        <code>AlphaBeta</code>将会失败或失败，分别返回最小值或最小值的上限或下限。零窗口调用会导致更多的截断，但返回的信息更少 - 仅限于最小最大值。然而，要找到它，
+        <code>MTD(f)</code>必须多次调用
+        <code>AlphaBeta</code>，才能收敛它。在重复调用
+        <code>AlphaBeta</code>时重新搜索部分搜索树的开销会在使用存储和检索其在内存中看到的节点的
+        <code>AlphaBeta</code>版本时消失。</p>
+    <h4 data-line="257" class="code-line code-line" id="mtdf">MTD(f)伪代码</h4>
     <pre class="hljs"><code><div>function MTDF(root, f, d)
     g := f
     upperBound := +∞
@@ -1004,9 +922,73 @@
             lowerBound := g
     return g
 </div></code></pre>
-    <p data-line="268" class="code-line">其中f为猜测的值，为动作action a的分值，最快的算法收敛，第一次通话可能为0。</p>
-    <p data-line="270" class="code-line">d为深度，迭代加深深度优先搜索可以通过多次调用
+    <p data-line="274" class="code-line code-line">其中f为猜测的值，为动作action a的分值，最快的算法收敛，第一次通话可能为0。</p>
+    <p data-line="276" class="code-line code-line">d为深度，迭代加深深度优先搜索可以通过多次调用
         <code>MTDF()</code>并增加d来完成，并提供f中最好的先前结果</p>
+    <h4 data-line="278" class="code-line code-line" id="mtddecider">MTDDecider类</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>introduction</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Map&lt;State, SearchNode&gt; transpositionTable</td>
+                <td>转置表，减少了多次搜索对于重复情况的开销。</td>
+            </tr>
+            <tr>
+                <td>class ActionValuePaipublic</td>
+                <td>存储上一次迭代信息</td>
+            </tr>
+            <tr>
+                <td>Action iterative_deepening(State root)</td>
+                <td>限制时间内进行零窗口搜索，根据
+                    <code>USE_MTDF</code>选择搜索算法</td>
+            </tr>
+            <tr>
+                <td>int MTDF(State root, int firstGuess, int depth)</td>
+                <td>MTDF算法，迭代搜索返回当前局面分值</td>
+            </tr>
+            <tr>
+                <td>int AlphaBetaWithMemory(State state, int alpha, int beta, int depth, int color)</td>
+                <td>应用了置换表的
+                    <eq>
+                        <span class="katex">
+                            <span class="katex-mathml">
+                                <math>
+                                    <semantics>
+                                        <mrow>
+                                            <mi>α</mi>
+                                            <mo>−</mo>
+                                            <mi>β</mi>
+                                        </mrow>
+                                        <annotation encoding="application/x-tex">\alpha - \beta</annotation>
+                                    </semantics>
+                                </math>
+                            </span>
+                            <span class="katex-html" aria-hidden="true">
+                                <span class="strut" style="height:0.69444em;"></span>
+                                <span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span>
+                                <span class="base">
+                                    <span class="mord mathit" style="margin-right:0.0037em;">α</span>
+                                    <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                                    <span class="mbin">−</span>
+                                    <span class="mord rule" style="margin-right:0.2222222222222222em;"></span>
+                                    <span class="mord mathit" style="margin-right:0.05278em;">β</span>
+                                </span>
+                            </span>
+                        </span>
+                    </eq>剪枝算法，将已搜索的节点存储在置换表中，如果深度&gt;4,则分为depth与depth-2进行搜索</td>
+            </tr>
+        </tbody>
+    </table>
+    <h4 data-line="288" class="code-line code-line" id="mtdminimax">MTD与MiniMax对比</h4>
+    <h5 data-line="290" class="code-line code-line" id="">共同点</h5>
+    <p data-line="292" class="code-line code-line">MTD是基于MiniMax的改进算法，保留了极大极小值与深度限制的部分</p>
+    <h5 data-line="294" class="code-line code-line" id="">不同点</h5>
+    <p data-line="296" class="code-line code-line">MTD在MiniMax的基础上，引入了置换表技术，减少了重复计算带来的开销，并且增加了AlphaBeta剪枝</p>
 
 </body>
 

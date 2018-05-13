@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+        <style>
+/*--------------------------------------------------------------------------------------------- * Copyright (c) Microsoft Corporation. All rights reserved. * Licensed under the MIT License. See License.txt in the project root for license information. *--------------------------------------------------------------------------------------------*/ body { font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback"; font-size: 14px; padding: 0 12px; line-height: 22px; word-wrap: break-word; } body.scrollBeyondLastLine { margin-bottom: calc(100vh - 22px); } body.showEditorSelection .code-line { position: relative; } body.showEditorSelection .code-active-line:before, body.showEditorSelection .code-line:hover:before { content: ""; display: block; position: absolute; top: 0; left: -12px; height: 100%; } body.showEditorSelection li.code-active-line:before, body.showEditorSelection li.code-line:hover:before { left: -30px; } .vscode-light.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(0, 0, 0, 0.15); } .vscode-light.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(0, 0, 0, 0.40); } .vscode-dark.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 255, 255, 0.4); } .vscode-dark.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 255, 255, 0.60); } .vscode-high-contrast.showEditorSelection .code-active-line:before { border-left: 3px solid rgba(255, 160, 0, 0.7); } .vscode-high-contrast.showEditorSelection .code-line:hover:before { border-left: 3px solid rgba(255, 160, 0, 1); } img { max-width: 100%; max-height: 100%; } a { color: #4080D0; text-decoration: none; } a:focus, input:focus, select:focus, textarea:focus { outline: 1px solid -webkit-focus-ring-color; outline-offset: -1px; } hr { border: 0; height: 2px; border-bottom: 2px solid; } h1 { padding-bottom: 0.3em; line-height: 1.2; border-bottom-width: 1px; border-bottom-style: solid; } h1, h2, h3 { font-weight: normal; } h1 code, h2 code, h3 code, h4 code, h5 code, h6 code { font-size: inherit; line-height: auto; } a:hover { color: #4080D0; text-decoration: underline; } table { border-collapse: collapse; } table > thead > tr > th { text-align: left; border-bottom: 1px solid; } table > thead > tr > th, table > thead > tr > td, table > tbody > tr > th, table > tbody > tr > td { padding: 5px 10px; } table > tbody > tr + tr > td { border-top: 1px solid; } blockquote { margin: 0 7px 0 5px; padding: 0 16px 0 10px; border-left: 5px solid; } code { font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback"; font-size: 14px; line-height: 19px; } body.wordWrap pre { white-space: pre-wrap; } .mac code { font-size: 12px; line-height: 18px; } code > div { padding: 16px; border-radius: 3px; overflow: auto; } /** Theming */ .vscode-light { color: rgb(30, 30, 30); } .vscode-dark { color: #DDD; } .vscode-high-contrast { color: white; } .vscode-light code { color: #A31515; } .vscode-dark code { color: #D7BA7D; } .vscode-light code > div { background-color: rgba(220, 220, 220, 0.4); } .vscode-dark code > div { background-color: rgba(10, 10, 10, 0.4); } .vscode-high-contrast code > div { background-color: rgb(0, 0, 0); } .vscode-high-contrast h1 { border-color: rgb(0, 0, 0); } .vscode-light table > thead > tr > th { border-color: rgba(0, 0, 0, 0.69); } .vscode-dark table > thead > tr > th { border-color: rgba(255, 255, 255, 0.69); } .vscode-light h1, .vscode-light hr, .vscode-light table > tbody > tr + tr > td { border-color: rgba(0, 0, 0, 0.18); } .vscode-dark h1, .vscode-dark hr, .vscode-dark table > tbody > tr + tr > td { border-color: rgba(255, 255, 255, 0.18); } .vscode-light blockquote, .vscode-dark blockquote { background: rgba(127, 127, 127, 0.1); border-color: rgba(0, 122, 204, 0.5); } .vscode-high-contrast blockquote { background: transparent; border-color: #fff; }
+</style>
+<style>
+/* Tomorrow Theme */ /* http://jmblog.github.com/color-themes-for-google-code-highlightjs */ /* Original theme - https://github.com/chriskempson/tomorrow-theme */ /* Tomorrow Comment */ .hljs-comment, .hljs-quote { color: #8e908c; } /* Tomorrow Red */ .hljs-variable, .hljs-template-variable, .hljs-tag, .hljs-name, .hljs-selector-id, .hljs-selector-class, .hljs-regexp, .hljs-deletion { color: #c82829; } /* Tomorrow Orange */ .hljs-number, .hljs-built_in, .hljs-builtin-name, .hljs-literal, .hljs-type, .hljs-params, .hljs-meta, .hljs-link { color: #f5871f; } /* Tomorrow Yellow */ .hljs-attribute { color: #eab700; } /* Tomorrow Green */ .hljs-string, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #718c00; } /* Tomorrow Blue */ .hljs-title, .hljs-section { color: #4271ae; } /* Tomorrow Purple */ .hljs-keyword, .hljs-selector-tag { color: #8959a8; } .hljs { display: block; overflow-x: auto; color: #4d4d4c; padding: 0.5em; } .hljs-emphasis { font-style: italic; } .hljs-strong { font-weight: bold; }
+</style>
+<style>
+ul.contains-task-list { padding-left: 0; } ul ul.contains-task-list { padding-left: 40px; } .task-list-item { list-style-type: none; } .task-list-item-checkbox { vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'HelveticaNeue-Light', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="">人工智能 实验二</h1>
+<p><strong>151220129 计科 吴政亿 <a href="mailto:18805156360@163.com">18805156360@163.com</a></strong></p>
+<h2 id="task-1">Task 1</h2>
+<p><code>MiniMaxDecider.java</code>的代码相比于书本中的样例，将min与max进行了合并，用一个<code>boolean maximize</code>代替，以及通过+1,-1将两个函数抽象成一个，下面对三个函数进行简要介绍。</p>
+<h3 id="">变量定义</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>变量名</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>boolean</td>
+<td>maximize</td>
+<td>为true时最大化val,为false时最小化val</td>
+</tr>
+<tr>
+<td>int</td>
+<td>depth</td>
+<td>限制了递归的深度</td>
+</tr>
+<tr>
+<td>Map</td>
+<td>computedStates</td>
+<td>用Hash存储不同局面及得分，避免重复运算</td>
+</tr>
+</tbody>
+</table>
+<h3 id="minimaxdeciderboolean-maximize--int-depth">MiniMaxDecider(boolean maximize, int depth)</h3>
+<p>对上面的变量进行初始化</p>
+<h3 id="public-action-decidestate-state">public Action decide(State state)</h3>
+<ol>
+<li>根据maximize将value初始化为负无穷或正无穷</li>
+<li>定义<code>bestAction</code>用于存储最高得分的动作序列</li>
+<li>初始化因子<code>flag</code>为-1或+1.</li>
+<li>遍历所有当前局势下所有可能的动作
+<ul>
+<li>定义变量<code>newState</code>与<code>newValue</code>为此动作的预期局势与得分</li>
+<li>如果<code>maximize == true</code>则取其中的得分最高项，反之取最低得分</li>
+<li>两个if是为了保证<code>bestAction</code>中的actions得分相同且均为最优解</li>
+</ul>
+</li>
+<li>从<code>bestAction</code>中随机选取一个action执行</li>
+</ol>
+<h3 id="public-float-minimaxrecursorstate-state--int-depth--boolean-maximize">public float miniMaxRecursor(State state, int depth, boolean maximize)</h3>
+<p>此函数与上一个函数<code>decide</code>相似，是抽象出来的递归部分</p>
+<ol>
+<li>如果<code>computedStates</code>中存在，即已经计算过得分，则直接返回</li>
+<li>如果游戏结束或者到达递归最底层，则直接返回当前局面由启发式函数计算的评估分数</li>
+<li>与函数<code>decide</code>大体相同</li>
+<li>最后返回评估分数</li>
+</ol>
+<h3 id="private-float-finalizestate-state--float-value">private float finalize(State state, float value)</h3>
+<p>未使用，返回<code>value</code>。</p>
+<h2 id="task-2">Task 2</h2>
+<p>对下列函数加入<code>alpha</code>与<code>beta</code>参数，进行$\alpha-\beta$剪枝</p>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">float</span> <span class="hljs-title">miniMaxRecursor</span><span class="hljs-params">(State state, <span class="hljs-keyword">int</span> depth, <span class="hljs-keyword">boolean</span> maximize, <span class="hljs-keyword">float</span> alpha, <span class="hljs-keyword">float</span> beta)</span> </span>{
+    <span class="hljs-comment">// Has this state already been computed?</span>
+    <span class="hljs-keyword">if</span> (computedStates.containsKey(state)) 
+                <span class="hljs-comment">// Return the stored result</span>
+                <span class="hljs-keyword">return</span> computedStates.get(state);
+    <span class="hljs-comment">// Is this state done?</span>
+    <span class="hljs-keyword">if</span> (state.getStatus() != Status.Ongoing)
+                <span class="hljs-comment">// Store and return</span>
+                <span class="hljs-keyword">return</span> finalize(state, state.heuristic());
+    <span class="hljs-comment">// Have we reached the end of the line?</span>
+    <span class="hljs-keyword">if</span> (depth == <span class="hljs-keyword">this</span>.depth)
+                <span class="hljs-comment">//Return the heuristic value</span>
+                <span class="hljs-keyword">return</span> state.heuristic();
+            
+    <span class="hljs-comment">// If not, recurse further. Identify the best actions to take.</span>
+    <span class="hljs-keyword">float</span> value = maximize ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
+    <span class="hljs-keyword">int</span> flag = maximize ? <span class="hljs-number">1</span> : -<span class="hljs-number">1</span>;
+    List&lt;Action&gt; test = state.getActions();
+    <span class="hljs-keyword">for</span> (Action action : test) {
+        <span class="hljs-comment">// Check it. Is it better? If so, keep it.</span>
+        <span class="hljs-keyword">try</span> {
+            State childState = action.applyTo(state);
+            <span class="hljs-keyword">float</span> newValue = <span class="hljs-keyword">this</span>.miniMaxRecursor(childState, depth + <span class="hljs-number">1</span>, !maximize, alpha, beta);
+            <span class="hljs-comment">//Record the best value</span>
+            <span class="hljs-keyword">if</span> (flag * newValue &gt; flag * value) {
+                value = newValue;
+                <span class="hljs-comment">//alpha-beta cut</span>
+                <span class="hljs-keyword">if</span> (maximize &amp;&amp; value &gt; alpha) {
+                    <span class="hljs-keyword">if</span> (value &gt; beta)
+                        <span class="hljs-keyword">return</span> finalize(state, value);
+                    alpha = value;
+                } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!maximize &amp;&amp; value &lt; beta) {
+                    <span class="hljs-keyword">if</span> (value &lt; alpha)
+                        <span class="hljs-keyword">return</span> finalize(state, value);
+                    beta = value;
+                }
+            }
+        } <span class="hljs-keyword">catch</span> (InvalidActionException e) {
+            <span class="hljs-comment">//Should not go here</span>
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> RuntimeException(<span class="hljs-string">"Invalid action!"</span>);
+        }
+    }
+    <span class="hljs-comment">// Store so we don't have to compute it again.</span>
+    <span class="hljs-keyword">return</span> finalize(state, value);
+}
+</div></code></pre>
+<p>在<code>Othello</code>中递归深度为2时，加入$\alpha-\beta$剪枝后速度几乎毫无变化。
+逐渐加深深度，由于深度不大，所以效果依旧不太明显。</p>
+<p>最后将<code>Othello</code>中递归深度由2改为8</p>
+<ul>
+<li>在原有未剪枝的版本，前两步还在1s左右，到第三步就默默的不动了。</li>
+<li>在加入$\alpha-\beta$剪枝后，每一步反应时间大约在1s左右。</li>
+</ul>
+<p>可见加入了$\alpha-\beta$剪枝后速度大幅度提升。</p>
+<h3 id="task-3">Task 3</h3>
+<h4 id="heuristic">原有<code>heuristic</code>函数</h4>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">float</span> <span class="hljs-title">heuristic</span><span class="hljs-params">()</span> </span>{
+    Status s = <span class="hljs-keyword">this</span>.getStatus();
+    <span class="hljs-keyword">int</span> winconstant = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">switch</span> (s) {
+    <span class="hljs-keyword">case</span> PlayerOneWon:
+        winconstant = <span class="hljs-number">5000</span>;
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> PlayerTwoWon:
+        winconstant = -<span class="hljs-number">5000</span>;
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">default</span>:
+        winconstant = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">break</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.pieceDifferential() +
+        <span class="hljs-number">8</span> * <span class="hljs-keyword">this</span>.moveDifferential() +
+        <span class="hljs-number">300</span> * <span class="hljs-keyword">this</span>.cornerDifferential() +
+        <span class="hljs-number">1</span> * <span class="hljs-keyword">this</span>.stabilityDifferential() + 
+        winconstant;
+}
+</div></code></pre>
+<p>其中<code>winconstant</code>是得分，在这里以玩家A举例，B同理。</p>
+<ul>
+<li>如果A能赢则给5000分的分值</li>
+<li>已有多少个棋子，分值1分</li>
+<li>有多少个可动点，分值8分</li>
+<li>有多少个顶角点，分值300分（顶角点绝对不会被翻转，而且变相相当于两边与一个对角线钦定为你的颜色）</li>
+<li>有多少个可翻转棋子，分值1分</li>
+</ul>
+<p>其中，他将棋盘分为水平，竖直与两个对角线，一个四个方向计分并累加。</p>
+<h4 id="heuristic">优化后的<code>heuristic</code>函数</h4>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">float</span> <span class="hljs-title">heuristic</span><span class="hljs-params">()</span> </span>{
+    Status s = <span class="hljs-keyword">this</span>.getStatus();
+    <span class="hljs-keyword">int</span> winconstant = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">switch</span> (s) {
+    <span class="hljs-keyword">case</span> PlayerOneWon:
+        winconstant = <span class="hljs-number">5000</span>;
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> PlayerTwoWon:
+        winconstant = -<span class="hljs-number">5000</span>;
+        <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">default</span>:
+        winconstant = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">break</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.pieceDifferential() +
+        <span class="hljs-number">8</span> * <span class="hljs-keyword">this</span>.moveDifferential() +
+        <span class="hljs-number">300</span> * <span class="hljs-keyword">this</span>.cornerDifferential() +
+        <span class="hljs-number">1</span> * <span class="hljs-keyword">this</span>.stabilityDifferential() -
+        <span class="hljs-number">50</span> * <span class="hljs-keyword">this</span>.nextCornerDifferential() +
+        <span class="hljs-number">20</span> * <span class="hljs-keyword">this</span>.edgeDifferential() +
+        winconstant;
+}
+</div></code></pre>
+<p>主要的改动在于我添加了新的考虑因素，简单介绍一下两个新的函数</p>
+<h5 id="nextcornerdifferential"><code>nextCornerDifferential()</code></h5>
+<p>这个函数主要考虑了22点，22点的定义是指</p>
+<table>
+<thead>
+<tr>
+<th>.</th>
+<th>.</th>
+<th>.</th>
+<th>.</th>
+<th>.</th>
+<th>.</th>
+<th>.</th>
+<th>.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.</td>
+<td>x</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>x</td>
+<td>.</td>
+</tr>
+<tr>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+</tr>
+<tr>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+</tr>
+<tr>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+</tr>
+<tr>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+</tr>
+<tr>
+<td>.</td>
+<td>x</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>x</td>
+<td>.</td>
+</tr>
+<tr>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+</tr>
+</tbody>
+</table>
+<p>图中的四个一定要慎重考虑，尽量逼迫对方棋子下在这里，
+这样的话就可以将棋下在4个corner处，从而相当于霸占了两个边加一个对角线。
+所以我将这四个点给予负分50的权重。</p>
+<h5 id="edgedifferential"><code>edgeDifferential()</code></h5>
+<p>这个函数用来计算四条边的棋子数量，因为中间的棋子贴边，相比之下他的比分要高于其他位置，
+我将边上的棋子，赋予20的权重</p>
+<h3 id="task-4">Task 4</h3>
+<p>MTD（f）通过仅执行零窗口$\alpha$-$\beta$搜索来获得其效率，并具有“良好”的界限（变量$\beta$）。 在NegaScout中，使用宽搜索窗口调用搜索，就像<code>AlphaBeta（root，-INFINITY，+ INFINITY，depth）</code>一样，所以返回值在一次调用中位于$\alpha$和$\beta$的值之间。 在MTD（f）中，AlphaBeta失败的高或低，分别返回minimax值的下界或上界。 零窗口调用会导致更多的截断，但返回的信息更少 - 仅限于最小值。 为了找到极小极大值，MTD（f）多次调用<code>AlphaBeta</code>，收敛它并最终找到确切的值。 转置表存储和检索存储器中树的先前搜索的部分以减少重新探索搜索树的部分的开销。</p>
+<p>其中，<code>Map&lt;State, SearchNode&gt; transpositionTable</code>作为一个转置表，减少了多次搜索对于重复情况的开销。</p>
+<p>下面给出<code>MTDF</code>的伪代码：</p>
+<pre><code class="language-code">function MTDF(root, f, d)
+    g := f
+    upperBound := +∞
+    lowerBound := -∞
+    while lowerBound < upperBound
+        β := max(g, lowerBound+1)
+        g := AlphaBetaWithMemory(root, β-1, β, d)
+        if g < β then
+            upperBound := g
+        else
+            lowerBound := g
+    return g
+</code></pre>
+<p>其中f为猜测的值，为动作action a的分值，最快的算法收敛，第一次通话可能为0。</p>
+<p>d为深度，迭代加深深度优先搜索可以通过多次调用<code>MTDF()</code>并增加d来完成，并提供f中最好的先前结果</p>
+
+    </body>
+    </html>
